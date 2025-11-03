@@ -44,3 +44,57 @@
 ---
 
 ## **2. Teststrategie entwerfen**
+
+**Testumfang (Scope of Testing)**
+
+- **Im Umfang enthalten:**
+    *Welche Funktionalitäten werden getestet?*
+        - Testumfang (Scope of Testing)
+        - Navigation: Überprüfung, ob die Hauptnavigationsbuttons (Home, Shop, Favorites, Contact) 
+          korrekt auf die jeweiligen Seiten führen.
+        - Produktsuche: Test der Suchfunktion, z.B. nach „apple“, um sicherzustellen,
+          dass passende Produkte angezeigt werden.
+        - Registrierung und Login: Validierung des Benutzerregistrierungs- und Loginprozesses.
+        - Altersverifikation: Überprüfung, ob das Alter korrekt erkannt wird
+          (z.B. bei Eingabe zu jung, korrekt oder unrealistisch wie 2030).
+        - Favoritenfunktion: Testen von Hinzufügen und Entfernen von Produkten sowie der Sortierfunktionen
+          (Preis, Name, Empfehlung).
+
+- **Nicht im Umfang enthalten:**
+    *Was ist vom Test ausgeschlossen?*
+        - Kauf- / Checkout-Funktion: Transaktionen werden nicht getestet.
+        - Zahlungs- und Backend-Prozesse: Payment-Gateways, Datenbankintegration, externe Dienste.
+        - Nicht-funktionale Tests, wie Performance, Last, Security (werden evtl. später durchgeführt). 
+
+
+**Geplante Testarten**
+*Welche Testarten werden für die neuen Funktionen benötigt?*
+    - Funktionstests
+        - Überprüfung, ob die Hauptfunktionen des Webshops wie vorgesehen arbeiten.
+        - Dazu gehören Navigation, Suche, Login/Registrierung, Altersverifikation und Favoritenfunktion.
+
+**Risiken und Gegenmaßnahmen**
+| Bereich / Test          | Risiko                                                                  | Gegenmaßnahme                                                                                                         |
+| ----------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **Navigation**          | Klick auf einen Button führt auf falsche Seite oder falschen Inhalt     | Manuelles Durchklicken aller Hauptbuttons auf korrekte Seiten; Screenshots dokumentieren                              |
+| **Produktsuche**        | Falsche Suchergebnisse (z.B. „apple“ → „egg“)                           | Test mit verschiedenen Suchbegriffen, Vergleich mit erwarteten Ergebnissen                                            |
+| **Registrierung/Login** | Account wird doppelt erstellt, Passwort funktioniert nicht              | Test mit bestehenden und neuen Accounts; Überprüfung von Fehlermeldungen bei bereits registrierten Benutzern          |
+| **Altersverifikation**  | Nutzer unter Mindestalter erhält Zugriff auf altersbeschränkte Produkte | Test mit verschiedenen Geburtstagen (zu jung, korrekt, unrealistisch) und Kontrolle, ob Zugang korrekt blockiert wird |
+| **Favoritenfunktion**   | Produkte werden nicht oder falsch gespeichert                           | Test des Hinzufügens, Entfernens und Sortierens der Favoriten; Vergleich mit erwarteten Produkten                     |
+
+- **Entwicklungsverzögerungen**
+    → Gegenmaßnahme: Zeitpuffer im Zeitplan einplanen
+    
+- **Fehlende Testdaten**
+    → Gegenmaßnahme: Erstellen von Testdaten (Mock-Daten)
+    
+- **Ressourcenengpässe**
+    → Gegenmaßnahme: Ersatzpersonen identifizieren und einplanen
+    
+
+**Testlogistik (Testverantwortlichkeiten)**
+
+- **Testmanager** – Marc Maier
+  - Verantwortlich für Planung, Durchführung und Dokumentation der funktionalen Tests.
+- **Endanwender für UAT (User Acceptance Test)** – Marc Maier
+  - Führt die Tests aus Sicht eines Endnutzers durch und dokumentiert die Ergebnisse.
