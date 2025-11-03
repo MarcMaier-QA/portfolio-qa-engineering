@@ -98,3 +98,31 @@
   - Verantwortlich für Planung, Durchführung und Dokumentation der funktionalen Tests.
 - **Endanwender für UAT (User Acceptance Test)** – Marc Maier
   - Führt die Tests aus Sicht eines Endnutzers durch und dokumentiert die Ergebnisse.
+
+---
+
+## **3. Testziele definieren**
+
+**Ziele**
+- Funktionalität:
+    - Sicherstellen, dass alle Hauptfunktionen
+      (Navigation, Suche, Login/Registrierung, Altersverifikation, Favoritenfunktion)
+      wie vorgesehen arbeiten.
+
+- Benutzeroberfläche (GUI):
+    - Überprüfung, ob alle Buttons und Links korrekt funktionieren und
+      die Navigation übersichtlich gestaltet ist.
+
+- Benutzbarkeit (Usability):
+    -Bewertung, ob die Benutzerführung intuitiv ist und
+     Fehlermeldungen verständlich sowie konsistent angezeigt werden.
+
+**Erwartete Ergebnisse**
+  - Alle Buttons (Home, Shop, Favorites, Contact) führen auf die korrekte Seite.
+  - Die Suchfunktion liefert relevante Produkte passend zur Eingabe(z.b "apple" -> Apfelsorten).
+  - Registrierung und Login funktionieren mit validen Daten und verhindern doppelte Accounts.
+  - Altersverifikation blockiert zu junge Nutzer korrekt und erlaubt gültige Altersangaben.
+  - Beim Hinzufügen zu Favoriten erscheint aktuell fälschlicherweise eine Fehlermeldung
+    („Failed to add to favorites“), das Produkt wird aber dennoch korrekt gespeichert
+    → dies wird als UI-Fehler (nicht-blockierend) dokumentiert.
+  - Die Anwendung reagiert schnell und ohne merkbare Verzögerungen.
