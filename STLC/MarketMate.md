@@ -126,3 +126,24 @@
     („Failed to add to favorites“), das Produkt wird aber dennoch korrekt gespeichert
     → dies wird als UI-Fehler (nicht-blockierend) dokumentiert.
   - Die Anwendung reagiert schnell und ohne merkbare Verzögerungen.
+
+---
+
+## **4. Testkriterien definieren**
+
+**Aussetzungskriterien (Suspension Criteria)**
+- Kritische Fehler, die den Zugriff auf Hauptfunktionen
+  (z. B. Login, Navigation, Suche) verhindern, blockieren die Fortsetzung der Tests.
+- Fests werden ausgesetzt, wenn die Testumgebung nicht erreichbar ist oder essentielle Komponenten
+  (z. B. Server, Datenbank) ausfallen.
+
+**Abnahmekriterien (Exit Criteria)**
+- Alle geplanten funktionalen Tests (Navigation, Suche, Registrierung, Altersprüfung, Favoriten) wurden ausgeführt.
+- **Ausführungsrate:** 100 % (5 / 5 Tests wurden durchgeführt)
+- **Bestehensquote:** 80 % (4 / 5 Tests erfolgreich, 1 Fehler beim Favoriten-Feature)
+- Alle kritischen und hochpriorisierten Defekte wurden identifiziert und dokumentiert.
+- Es bestehen keine offenen Fehler der Schweregrade 1 oder 2
+- Performanz- und Sicherheitsaspekte waren nicht Bestandteil dieses Testzyklus.
+- Sicherheitslücken wurden behoben
+- Der aktuelle Testzyklus kann mit dem Hinweis auf einen bekannten mittleren Defekt
+  (Favoritenfunktion) abgeschlossen werden.
