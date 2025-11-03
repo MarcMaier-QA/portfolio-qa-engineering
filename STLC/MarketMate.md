@@ -147,3 +147,37 @@
 - Sicherheitslücken wurden behoben
 - Der aktuelle Testzyklus kann mit dem Hinweis auf einen bekannten mittleren Defekt
   (Favoritenfunktion) abgeschlossen werden.
+
+---
+
+## **5. Ressourcenplanung**
+
+- **Personelle Ressourcen:** 
+  - QA Engineer: Marc Maier
+  - Endanwender für UAT: Marc Maier
+- **Hardware:**
+  - MacBook(Desktop)
+- **Software:**
+  - Browser: Chrome
+  - Betriebssystem: macOS
+  - Tools: GitHub für Testdokumentation
+- **Infrastruktur:**
+  - Testumgebung: (https://grocerymate.masterschool.com/store/favs)
+  - Automatisierungs-Tools: bisher keine, funktionale Tests manuell
+
+---
+
+## **6. Testumgebung planen**
+
+- **Testgeräte:**
+  - MacBook(Desktop)
+  - Desktop-Browser: Chrome
+- **Umgebungen:**
+    - Entwicklung (DEV)
+    - Test (TEST)
+    - Abnahme (ACC – Acceptance)
+    - Produktion (PROD)
+- **Zusätzliche Hinweise:**
+  - Testa manuel über Browser
+  - Screenshots und Notizen Dienen der Dokumentation
+  - Keine automatisierten Tools aktuell, nur manuelle Durchführung 
