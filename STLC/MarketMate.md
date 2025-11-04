@@ -181,3 +181,18 @@
   - Testa manuel über Browser
   - Screenshots und Notizen Dienen der Dokumentation
   - Keine automatisierten Tools aktuell, nur manuelle Durchführung 
+
+---
+
+## **7. Zeitplan und Aufwandsschätzung**
+
+|  Aktivität                                                                  | Startdatum | Enddatum   | Umgebung | Verantwortlich | Geplanter Aufwand |
+|-----------------------------------------------------------------------------|------------|------------| -------- | -------------- | ----------------- |
+| Testplanung                                                                 | 03.11.2025 | 03.11.2025 | Alle     | Marc Maier     | 3 Stunden         |
+| Testfalldesign                                                              | 03.11.2025 | 03.11.2025 | Alle     | Marc Maier     | 5 Stunden         |
+| Funktionale Tests (Navigation, Suche, Login, Altersverifikation, Favoriten) | 04.11.2025 | 04.11.2025 | TEST     | Marc Maier     | 6 Stunden         |
+| Dokumentation der Testergebnisse                                            | 05.11.2025 | 05.11.2025 | TEST     | Marc Maier     | 2 Stunden         |
+| Review und Abschlussbewertung                                               | 05.11.2025 | 05.11.2025 | TEST     | Marc Maier     | 2 Stunden         |
+| Abnahmetest (UAT)                                                           | 05.11.2025 | 05.11.2025 | ACC      | Marc Maier     | 1 Stunde          |
+**Gesamter Aufwand: ca. 19 Stunden**
+(verteilt auf 3 Tage)
