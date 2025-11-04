@@ -132,21 +132,21 @@
 ## **4. Testkriterien definieren**
 
 **Aussetzungskriterien (Suspension Criteria)**
-- Kritische Fehler, die den Zugriff auf Hauptfunktionen
-  (z. B. Login, Navigation, Suche) verhindern, blockieren die Fortsetzung der Tests.
-- Fests werden ausgesetzt, wenn die Testumgebung nicht erreichbar ist oder essentielle Komponenten
-  (z. B. Server, Datenbank) ausfallen.
+    - Kritische Fehler, die den Zugriff auf Hauptfunktionen
+      (z. B. Login, Navigation, Suche) verhindern, blockieren die Fortsetzung der Tests.
+    - Fests werden ausgesetzt, wenn die Testumgebung nicht erreichbar ist oder essentielle Komponenten
+      (z. B. Server, Datenbank) ausfallen.
 
 **Abnahmekriterien (Exit Criteria)**
-- Alle geplanten funktionalen Tests (Navigation, Suche, Registrierung, Altersprüfung, Favoriten) wurden ausgeführt.
-- **Ausführungsrate:** 100 % (5 / 5 Tests wurden durchgeführt)
-- **Bestehensquote:** 80 % (4 / 5 Tests erfolgreich, 1 Fehler beim Favoriten-Feature)
-- Alle kritischen und hochpriorisierten Defekte wurden identifiziert und dokumentiert.
-- Es bestehen keine offenen Fehler der Schweregrade 1 oder 2
-- Performanz- und Sicherheitsaspekte waren nicht Bestandteil dieses Testzyklus.
-- Sicherheitslücken wurden behoben
-- Der aktuelle Testzyklus kann mit dem Hinweis auf einen bekannten mittleren Defekt
-  (Favoritenfunktion) abgeschlossen werden.
+    - Alle geplanten funktionalen Tests (Navigation, Suche, Registrierung, Altersprüfung, Favoriten) wurden ausgeführt.
+    - **Ausführungsrate:** 100 % (5 / 5 Tests wurden durchgeführt)
+    - **Bestehensquote:** 80 % (4 / 5 Tests erfolgreich, 1 Fehler beim Favoriten-Feature)
+    - Alle kritischen und hochpriorisierten Defekte wurden identifiziert und dokumentiert.
+    - Es bestehen keine offenen Fehler der Schweregrade 1 oder 2
+    - Performanz- und Sicherheitsaspekte waren nicht Bestandteil dieses Testzyklus.
+    - Sicherheitslücken wurden behoben
+    - Der aktuelle Testzyklus kann mit dem Hinweis auf einen bekannten mittleren Defekt
+      (Favoritenfunktion) abgeschlossen werden.
 
 ---
 
@@ -173,10 +173,10 @@
   - MacBook(Desktop)
   - Desktop-Browser: Chrome
 - **Umgebungen:**
-    - Entwicklung (DEV)
-    - Test (TEST)
-    - Abnahme (ACC – Acceptance)
-    - Produktion (PROD)
+  - Entwicklung (DEV)
+  - Test (TEST)
+  - Abnahme (ACC – Acceptance)
+  - Produktion (PROD)
 - **Zusätzliche Hinweise:**
   - Testa manuel über Browser
   - Screenshots und Notizen Dienen der Dokumentation
@@ -196,3 +196,18 @@
 | Abnahmetest (UAT)                                                           | 05.11.2025 | 05.11.2025 | ACC      | Marc Maier     | 1 Stunde          |
 **Gesamter Aufwand: ca. 19 Stunden**
 (verteilt auf 3 Tage)
+
+---
+
+## **8. Testartefakte (Test-Deliverables)**
+
+- Folgende Dokumente und Ergebnisse werden im Rahmen des Testprozesses für GroceryMate erstellt und bereitgestellt:
+  - Testplandokument: Enthält Zielsetzung, Strategie, Umfang und Ablauf der Tests (dieses Dokument).
+  - Testfälle und Testskripte: Detaillierte manuelle Testfälle für Navigation, Suche, Login/Registrierung,
+    Altersverifikation und Favoritenfunktion.
+  - Testdaten: Manuell erstellte Beispielnutzerdaten (z. B. verschiedene Geburtsdaten und Accounts) zur Überprüfung der
+    Altersverifikation und Loginfunktion. 
+  - Testberichte: Zusammenfassung der Testergebnisse, inklusive Anzahl bestandener/nicht bestandener Testfälle.
+  - Fehlerberichte (Defect Reports): Dokumentation aufgetretener Fehler mit Beschreibung, Schweregrad und Status.
+  - UAT-Freigabedokumentation (Sign-off): Bestätigung, dass die getesteten Funktionen den Anforderungen entsprechen und
+    für die Abnahme freigegeben werden.
