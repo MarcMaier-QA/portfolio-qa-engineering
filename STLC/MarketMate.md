@@ -76,6 +76,7 @@
         - Dazu gehören Navigation, Suche, Login/Registrierung, Altersverifikation und Favoritenfunktion.
 
 **Risiken und Gegenmaßnahmen**
+
 | Bereich / Test          | Risiko                                                                  | Gegenmaßnahme                                                                                                         |
 | ----------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | **Navigation**          | Klick auf einen Button führt auf falsche Seite oder falschen Inhalt     | Manuelles Durchklicken aller Hauptbuttons auf korrekte Seiten; Screenshots dokumentieren                              |
