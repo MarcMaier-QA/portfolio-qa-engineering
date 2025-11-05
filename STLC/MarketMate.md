@@ -1,3 +1,5 @@
+# Testplan – GroceryMate
+
 ## **1. Produktanalyse**
 
 **Zielsetzung**
@@ -25,7 +27,7 @@
 - **Hardwareanforderungen:**
     - Geräte: PCs, Laptops, Smartphones, Tablets
     - Spezifikationen:
-      - Standardkonfigurationen für Android- und iOS-Geräte; Desktops mit mindestens 4GB RAM und 2GHz Prozessor
+      - Standardkonfigurationen für Android- und iOS-Geräte; Desktops mit mindestens 4 GB RAM und 2 GHz Prozessor
 
 - **Softwareanforderungen:**
     - Betriebssysteme: Windows, macOS, Android, iOS
@@ -119,7 +121,7 @@
 
 **Erwartete Ergebnisse**
   - Alle Buttons (Home, Shop, Favorites, Contact) führen auf die korrekte Seite.
-  - Die Suchfunktion liefert relevante Produkte passend zur Eingabe(z.b "apple" -> Apfelsorten).
+  - Die Suchfunktion liefert relevante Produkte passend zur Eingabe(z.B. "apple" → Apfelsorten).
   - Registrierung und Login funktionieren mit validen Daten und verhindern doppelte Accounts.
   - Altersverifikation blockiert zu junge Nutzer korrekt und erlaubt gültige Altersangaben.
   - Beim Hinzufügen zu Favoriten erscheint aktuell fälschlicherweise eine Fehlermeldung
@@ -134,7 +136,7 @@
 **Aussetzungskriterien (Suspension Criteria)**
     - Kritische Fehler, die den Zugriff auf Hauptfunktionen
       (z. B. Login, Navigation, Suche) verhindern, blockieren die Fortsetzung der Tests.
-    - Fests werden ausgesetzt, wenn die Testumgebung nicht erreichbar ist oder essentielle Komponenten
+    - Fests werden ausgesetzt, wenn die Testumgebung nicht erreichbar ist oder essenzielle Komponenten
       (z. B. Server, Datenbank) ausfallen.
 
 **Abnahmekriterien (Exit Criteria)**
@@ -211,3 +213,34 @@
   - Fehlerberichte (Defect Reports): Dokumentation aufgetretener Fehler mit Beschreibung, Schweregrad und Status.
   - UAT-Freigabedokumentation (Sign-off): Bestätigung, dass die getesteten Funktionen den Anforderungen entsprechen und
     für die Abnahme freigegeben werden.
+
+---
+
+# Testfallentwurf
+
+## 1. Bewertungssystem für Produkte
+| Nr.(ID) | Testfall                                          | Eingabe                      | Erwartetes Ergebnis                                                         | Automatisierbar? |
+|---------|---------------------------------------------------|------------------------------|-----------------------------------------------------------------------------|------------------|
+| 1       | Bewertung mit 5 Sternen und Textkommentar abgeben | 5 Sterne + "Tolles Produkt!" | Bewertung wird gespeichert, Bestätigung "Danke für dein Feedback" erscheint | JA               |
+| 2       | Bewertung **ohne** textkommentar abgeben          | 4 Sterne, kein Text          | Bewertung wird gespeichert, keine Fehlermeldung                             | JA               |
+| 3       | Bewertung **ohne** Sterne, aber mit textabsenden  | 0 Sterne + "Gut"             | Fehlermeldung "Bitte vergib eine Sternebewertung"                           | JA               |
+
+
+## 2. Altersverifikation für alkoholische Produkte
+*Hinweis: Testdaten basieren auf dem aktuellen Datum: Di 04.11.2025*
+
+| Nr. | Testfall                                              | Eingabe    | Erwartetes Ergebnis                            | Automatisierbar? |
+| --- |-------------------------------------------------------|------------|------------------------------------------------|------------------|
+| 1   | Nutzer gibt Alter 18 ein                              | 27.08.2007 | Zugriff auf alkoholische Produkte wird gewährt | JA               |
+| 2   | Nutzer gibt Alter 17 ein                              | 27.08.2008 | Zugriff verweigert, Meldung "Nur ab 18 Jahren" | JA               |
+| 3   | Nutzer gibt keine Eingabe und klickt auf „Bestätigen“ | Kein Wert  | Fehlermeldung "Bitte Alter eingeben"           | JA               |
+
+
+## 3. Änderungen bei den Versandkosten
+- **Testentwurfsverfahren:** Grenzwertanalyse (BVA), Äquivalenzklassenbildung (EP)
+
+| Nr. | Testfall                           | Eingabe | Erwartetes Ergebnis                              | Automatisierbar? |
+| --- |------------------------------------|---------|--------------------------------------------------|------------------|
+| 1   | Bestellwert genau 50 € (Grenzwert) | 50 €    | Keine Versandkosten, Hinweis "Versand kostenlos" | JA               |
+| 2   | Bestellwert unter 50 €             | 49,99 € | Versandkosten werden berechnet, z. B. "5€"       | JA               |
+| 3   | Bestellwert über 50 €              | 75 €    | Versandkosten entfallen                          | JA               |
