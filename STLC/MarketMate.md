@@ -24,10 +24,12 @@
   - Die Anwendung soll auf gängigen Desktop- und Mobilgeräten funktionieren.
   - Getestet wird auf Standardkonfigurationen, die eine realistische Nutzung abbilden.
 
+
 - **Hardwareanforderungen:**
     - Geräte: PCs, Laptops, Smartphones, Tablets
     - Spezifikationen:
       - Standardkonfigurationen für Android- und iOS-Geräte; Desktops mit mindestens 4 GB RAM und 2 GHz Prozessor
+
 
 - **Softwareanforderungen:**
     - Betriebssysteme: Windows, macOS, Android, iOS
@@ -50,6 +52,7 @@
 **Testumfang (Scope of Testing)**
 
 - **Im Umfang enthalten:**
+
     *Welche Funktionalitäten werden getestet?*
         - Testumfang (Scope of Testing)
         - Navigation: Überprüfung, ob die Hauptnavigationsbuttons (Home, Shop, Favorites, Contact) 
@@ -62,7 +65,9 @@
         - Favoritenfunktion: Testen von Hinzufügen und Entfernen von Produkten sowie der Sortierfunktionen
           (Preis, Name, Empfehlung).
 
+
 - **Nicht im Umfang enthalten:**
+
     *Was ist vom Test ausgeschlossen?*
         - Kauf- / Checkout-Funktion: Transaktionen werden nicht getestet.
         - Zahlungs- und Backend-Prozesse: Payment-Gateways, Datenbankintegration, externe Dienste.
@@ -117,8 +122,8 @@
       die Navigation übersichtlich gestaltet ist.
 
 - Benutzbarkeit (Usability):
-    -Bewertung, ob die Benutzerführung intuitiv ist und
-     Fehlermeldungen verständlich sowie konsistent angezeigt werden.
+    - Bewertung, ob die Benutzerführung intuitiv ist und
+      Fehlermeldungen verständlich sowie konsistent angezeigt werden.
 
 **Erwartete Ergebnisse**
   - Alle Buttons (Home, Shop, Favorites, Contact) führen auf die korrekte Seite.
@@ -135,21 +140,21 @@
 ## **4. Testkriterien definieren**
 
 **Aussetzungskriterien (Suspension Criteria)**
-    - Kritische Fehler, die den Zugriff auf Hauptfunktionen
+  - Kritische Fehler, die den Zugriff auf Hauptfunktionen
       (z. B. Login, Navigation, Suche) verhindern, blockieren die Fortsetzung der Tests.
-    - Fests werden ausgesetzt, wenn die Testumgebung nicht erreichbar ist oder essenzielle Komponenten
-      (z. B. Server, Datenbank) ausfallen.
+  - Fests werden ausgesetzt, wenn die Testumgebung nicht erreichbar ist oder essenzielle Komponenten
+    (z. B. Server, Datenbank) ausfallen.
 
 **Abnahmekriterien (Exit Criteria)**
-    - Alle geplanten funktionalen Tests (Navigation, Suche, Registrierung, Altersprüfung, Favoriten) wurden ausgeführt.
-    - **Ausführungsrate:** 100 % (5 / 5 Tests wurden durchgeführt)
-    - **Bestehensquote:** 80 % (4 / 5 Tests erfolgreich, 1 Fehler beim Favoriten-Feature)
-    - Alle kritischen und hochpriorisierten Defekte wurden identifiziert und dokumentiert.
-    - Es bestehen keine offenen Fehler der Schweregrade 1 oder 2
-    - Performanz- und Sicherheitsaspekte waren nicht Bestandteil dieses Testzyklus.
-    - Sicherheitslücken wurden behoben
-    - Der aktuelle Testzyklus kann mit dem Hinweis auf einen bekannten mittleren Defekt
-      (Favoritenfunktion) abgeschlossen werden.
+  - Alle geplanten funktionalen Tests (Navigation, Suche, Registrierung, Altersprüfung, Favoriten) wurden ausgeführt.
+  - **Ausführungsrate:** 100 % (5 / 5 Tests wurden durchgeführt)
+  - **Bestehensquote:** 80 % (4 / 5 Tests erfolgreich, 1 Fehler beim Favoriten-Feature)
+  - Alle kritischen und hochpriorisierten Defekte wurden identifiziert und dokumentiert.
+  - Es bestehen keine offenen Fehler der Schweregrade 1 oder 2
+  - Performanz- und Sicherheitsaspekte waren nicht Bestandteil dieses Testzyklus.
+  - Sicherheitslücken wurden behoben
+  - Der aktuelle Testzyklus kann mit dem Hinweis auf einen bekannten mittleren Defekt
+   (Favoritenfunktion) abgeschlossen werden.
 
 ---
 
