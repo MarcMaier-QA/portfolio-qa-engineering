@@ -1,10 +1,3 @@
-# Hi, I'm Marc Maier
-
-I'm an aspiring **QA Engineer** currently training at **Masterschool** with a strong focus on **Test Automation**, **Python**, and **Clean Code**.  
-I’m passionate about quality, structure, and building reliable software through well-designed tests.
-
----
-
 ## About This Portfolio
 
 This repository showcases my journey and skills in **Software Testing** and **Test Automation**.  
