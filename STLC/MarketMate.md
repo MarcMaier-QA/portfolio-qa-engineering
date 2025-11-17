@@ -14,10 +14,29 @@
 
 **Zielnutzergruppe**
 *Wer nutzt das Produkt? Wer sind die relevanten Stakeholder auf Nutzerseite?*
-  - Die Anwendung richtet sich an Endverbraucher verschiedener Altersgruppen,
-    die online Lebensmittel und Getränke bestellen möchten.
-  - Einschränkungen bestehen lediglich für Produkte mit Altersfreigabe (z. B. alkoholische Getränke, ab 18 Jahren).
-  - Relevante Stakeholder auf Nutzerseite sind Privatkunden, das Produktmanagement und das Entwicklungsteam.
+  - Die primäre Zielgruppe der Anwendung besteht aus technikaffinen Jugendlichen und jungen Erwachsenen
+    im Alter von 15–25 Jahren, die hauptsächlich im Gaming-Bereich aktiv sind und Wert auf eine einfache,
+    schnelle und bequeme Onlinebestellung von Lebensmitteln legen.
+
+#### - **Typische Merkmale dieser Zielgruppe:**
+- Digitale Routine:
+  - Nutzen regelmäßig Smartphones, Discord, Twitch, Gaming-Plattformen; erwarten kurze Ladezeiten und klare Navigation.
+
+- Verhaltensmuster beim Einkauf:
+  - Bestellen Snacks, Getränke und schnelle Mahlzeiten häufig abends/nachts oder am Wochenende;
+    erwarten intuitive Suchfunktionen und schnelle Wiederbestellung.
+
+- Gesundheitsbewusstsein:
+  - Trotz Gaming-Lifestyle achten viele auf energiereiche,
+    teilweise gesunde Produkte (Protein-Snacks, Energydrinks, Meal-Prep-Zutaten).
+
+- Spezielle Anforderungen:
+  - Oft ungeduldig → niedrige Toleranz für UI-Fehler
+  - Kaufen gelegentlich Produkte mit Altersbeschränkung (z. B. Energydrinks mit Alterscheck, alkoholische Getränke ab 18)
+  - Legen Wert auf einfache Registrierung (Google/Discord Login, klare Fehlerhinweise)
+
+- Relevante Stakeholder:
+  - Privatkunden dieser Altersgruppe, Produktmanagement und das Entwicklungsteam.
 
 
 **Hardware- und Software-Spezifikationen**
@@ -34,7 +53,6 @@
 - **Softwareanforderungen:**
     - Betriebssysteme: Windows, macOS, Android, iOS
     - Browser: Chrome, Firefox, Safari, Edge
-    - Abhängigkeiten: Backend-Dienste, Zahlungsschnittstellen
 
 
 **Funktionalität des Produkts**
@@ -71,7 +89,7 @@
     *Was ist vom Test ausgeschlossen?*
         - Kauf- / Checkout-Funktion: Transaktionen werden nicht getestet.
         - Zahlungs- und Backend-Prozesse: Payment-Gateways, Datenbankintegration, externe Dienste.
-        - Nicht-funktionale Tests, wie Performance, Last, Security (werden evtl. später durchgeführt). 
+        - Nicht-funktionale Tests, wie Performance, Last, Security
 
 
 **Geplante Testarten**
@@ -82,23 +100,19 @@
 
 **Risiken und Gegenmaßnahmen**
 
-| Bereich / Test          | Risiko                                                                  | Gegenmaßnahme                                                                                                         |
-| ----------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| **Navigation**          | Klick auf einen Button führt auf falsche Seite oder falschen Inhalt     | Manuelles Durchklicken aller Hauptbuttons auf korrekte Seiten; Screenshots dokumentieren                              |
-| **Produktsuche**        | Falsche Suchergebnisse (z.B. „apple“ → „egg“)                           | Test mit verschiedenen Suchbegriffen, Vergleich mit erwarteten Ergebnissen                                            |
-| **Registrierung/Login** | Account wird doppelt erstellt, Passwort funktioniert nicht              | Test mit bestehenden und neuen Accounts; Überprüfung von Fehlermeldungen bei bereits registrierten Benutzern          |
-| **Altersverifikation**  | Nutzer unter Mindestalter erhält Zugriff auf altersbeschränkte Produkte | Test mit verschiedenen Geburtstagen (zu jung, korrekt, unrealistisch) und Kontrolle, ob Zugang korrekt blockiert wird |
-| **Favoritenfunktion**   | Produkte werden nicht oder falsch gespeichert                           | Test des Hinzufügens, Entfernens und Sortierens der Favoriten; Vergleich mit erwarteten Produkten                     |
+| Bereich                 | Risiko                                                                                | Gegenmaßnahme                                                                                      |
+| ----------------------- | ------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| **Zielgruppe**          | Ungeduldige Nutzer brechen Prozesse wegen langer Ladezeiten ab                        | Ladezeit-Checks; Tests mit schlechter Verbindung; verständliche Warte-/Fehlermeldungen             |
+| **Zielgruppe**          | Altersverifikation blockiert legitime Nutzer oder lässt Minderjährige durch           | Tests mit Randfällen, falschen Formaten und Zahlendrehern; validierte 18+-Logik; klare Fehlertexte |
+| **Produkte & Suche**    | Suche liefert irrelevante Ergebnisse (z. B. Gaming-typische Suchbegriffe)             | Tests mit typischen Keywords, Schreibfehlern und Synonymen; Relevanzsortierung prüfen              |
+| **Favoriten**           | Produkte werden falsch oder nicht gespeichert / nicht zwischen Geräten synchronisiert | Hinzufügen/Entfernen testen; Cross-Device-Tests; Persistenz nach Login/Logout prüfen               |
+| **Login/Registrierung** | Doppelte Accounts, unklare Fehlertexte, Abbrüche im Prozess                           | Tests mit vergebenen E-Mails; Social-Login-Tests; Fehlermeldungen optimieren                       |
+| **Mobile Nutzung**      | UI-Fehler auf Smartphones, besonders im Dark Mode                                     | Tests auf iOS/Android; verschiedene Displaygrößen; Dark-Mode-Check                                 |
+| **Performance**         | Such- oder Filterperformance bricht bei hoher Nutzung ein                             | Stresstests der Such-API; Grenzwerte (lange Listen, viele Filter) testen                           |
+| **Projektorganisation** | Entwicklungsverzögerungen                                                             | Zeitpuffer einplanen                                                                               |
+| **Projektorganisation** | Fehlende oder falsche Testdaten                                                       | Erstellung realistischer Mock-Daten                                                                |
+| **Projektorganisation** | Ressourcenengpässe im Testteam                                                        | Vertreter einplanen; Tests priorisieren                                                            |
 
-- **Entwicklungsverzögerungen**
-    → Gegenmaßnahme: Zeitpuffer im Zeitplan einplanen
-    
-- **Fehlende Testdaten**
-    → Gegenmaßnahme: Erstellen von Testdaten (Mock-Daten)
-    
-- **Ressourcenengpässe**
-    → Gegenmaßnahme: Ersatzpersonen identifizieren und einplanen
-    
 
 **Testlogistik (Testverantwortlichkeiten)**
 
@@ -140,21 +154,54 @@
 ## **4. Testkriterien definieren**
 
 **Aussetzungskriterien (Suspension Criteria)**
-  - Kritische Fehler, die den Zugriff auf Hauptfunktionen
-      (z. B. Login, Navigation, Suche) verhindern, blockieren die Fortsetzung der Tests.
-  - Fests werden ausgesetzt, wenn die Testumgebung nicht erreichbar ist oder essenzielle Komponenten
-    (z. B. Server, Datenbank) ausfallen.
+
+- **Blockierende Fehler in Kernfunktionen:**
+  
+  Treten kritische Fehler auf, die den Zugriff auf zentrale Funktionen wie Login, Navigation oder Produktsuche
+  verhindern, wird der Testzyklus sofort ausgesetzt.
+
+- **Nicht verfügbare Testumgebung:**
+
+  Ist die Testumgebung nicht erreichbar oder fallen essenzielle Komponenten (z.b. Server, Datenbank) aus,
+  werden Tests pausiert, bis die Umgebung stabil ist.
+
+- **Abbruch bei unbrauchbaren Testdaten:**
+
+  Sollten die zur Verfügung stehenden Testdaten fehlerhaft oder unvollständig sein,
+  werden die Tests bis zur Bereitstellung gültiger Daten gestoppt.
+
+- **Sonstige kritische Störungen:**
+
+  Jegliche andere schwerwiegende Systemstörungen, die das Testergebnis verfälschen oder die Sicherheit
+  der Testumgebung gefährden, führen zur temporären Unterbrechung.
+
+- **Organisatorische Aussetzungen:**
+
+  Tests werden ausgesetzt, wenn die Testdurchführung aufgrund betrieblicher Gegebenheiten wie Feiertagen,
+  Betriebsferien oder geplanten Wartungsfenstern nicht möglich ist.
 
 **Abnahmekriterien (Exit Criteria)**
-  - Alle geplanten funktionalen Tests (Navigation, Suche, Registrierung, Altersprüfung, Favoriten) wurden ausgeführt.
-  - **Ausführungsrate:** 100 % (5 / 5 Tests wurden durchgeführt)
-  - **Bestehensquote:** 80 % (4 / 5 Tests erfolgreich, 1 Fehler beim Favoriten-Feature)
+
+- **Testdurchführung abgeschlossen:**
+  - Alle geplanten funktionalen Tests (Navigation, Suche, Registrierung, Altersprüfung, Favoritenfunktion) wurden durchgeführt.
+
+- **Ergebnisqualität:**
+
+  - **Bestehensquote:** ≥ 80% der Testfälle erfolgreich bestanden.
+
   - Alle kritischen und hochpriorisierten Defekte wurden identifiziert und dokumentiert.
-  - Es bestehen keine offenen Fehler der Schweregrade 1 oder 2
-  - Performanz- und Sicherheitsaspekte waren nicht Bestandteil dieses Testzyklus.
-  - Sicherheitslücken wurden behoben
-  - Der aktuelle Testzyklus kann mit dem Hinweis auf einen bekannten mittleren Defekt
-   (Favoritenfunktion) abgeschlossen werden.
+
+  - Bekannte mittlere oder geringe Fehler (z.B. UI-Fehler bei Favoritenfunktion) sind vermerkt,
+    blockieren jedoch nicht die Freigabe.
+
+- **Fehlerbehebung:**
+  - Kritische Fehler (Severity 1 und 2) wurden behoben oder für die Abnahme priorisiert.
+
+- **Testdokumentation:**
+  - Testergebnisse, Defect Reports und UAT-Freigabedokumentation liegen vollständig vor.
+
+- **Nicht-funktionale Aspekte:**
+  - Performance- und Sicherheitsaspekte waren nicht Bestandteil dieses Testzyklus; bekannte Einschränkungen sind dokumentiert.
 
 ---
 
