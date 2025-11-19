@@ -18,3 +18,8 @@ def driver():
     driver.get("https://www.saucedemo.com/")
     yield driver
     driver.quit()
+
+
+@pytest.mark.parametrize("username", USERS)
+def test_login(driver, username):
+    pass
