@@ -1,5 +1,6 @@
 import pytest
 from selenium import webdriver
+from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
 
 VALID_PASSWORD = "secret_sauce"
@@ -34,6 +35,11 @@ def test_login(driver, username):
     # Login ausführen
     login_button.click()
 
-    # Login prüfen
-    title_element = driver.find_element(By.CLASS_NAME, "title")
-    assert title_element.text == "Products"
+    if username == "locked_out_user":
+        with pytest.raises(NoSuchElementException):
+            driver.find_element(By.CLASS_NAME, "title")
+
+    else:
+        # Login prüfen
+        title_element = driver.find_element(By.CLASS_NAME, "title")
+        assert title_element.text == "Products"
