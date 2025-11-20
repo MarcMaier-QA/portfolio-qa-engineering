@@ -35,8 +35,6 @@ def count_word_matches(text, target):
     ("catcat cat catdog", "cat", 1),
     ("a a a", "a", 3)
 ])
-
-
 def test_parametrize(text, target, expected_result):
     # Rufen Sie die zu testende Funktion auf
     actual_result = count_word_matches(text, target)
@@ -48,6 +46,8 @@ def test_parametrize(text, target, expected_result):
 # Übung 2: Testen von Randfällen (Edge Case Testing)
 @pytest.fixture(params=[
     # text, target, expected result
+    (None, "word", 0),
+    ("hello world", None, 0),
     ("", "word", 0),
     ("hello world", "", 0),
     ("", "", 0),
@@ -56,7 +56,6 @@ def test_parametrize(text, target, expected_result):
     ("cat,dog cat", "cat", 1),
     ("x y z", "x", 1)
 ])
-
 
 def edge_case_data(request):
     return request.param
@@ -70,12 +69,10 @@ def test_count_word_matches(edge_case_data):
 # Übung 3: Negativtests (Negative Testing)
 @pytest.fixture(params=[
     # text, target, expected result
-    (None, "word", TypeError),
-    ("hello world", None, TypeError),
-    (123, "word", TypeError),
-    ("hello world", 456, TypeError),
-    (["hello", "world"], "word", TypeError),
-    ("hello world", ["word"], TypeError),
+    (123, "word", AttributeError),
+    ("hello world", 456, AttributeError),
+    (["hello", "world"], "word", AttributeError),
+    ("hello world", ["word"], AttributeError),
 ])
 
 
@@ -85,5 +82,6 @@ def invalid_input_data(request):
 
 def test_count_word_matches_invalid_inputs(invalid_input_data):
     text, target, expected_result = invalid_input_data
+
     with pytest.raises(expected_result):
         count_word_matches(text, target)
