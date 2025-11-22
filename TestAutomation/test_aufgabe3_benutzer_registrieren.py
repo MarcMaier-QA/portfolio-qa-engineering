@@ -71,7 +71,7 @@ assert signup_title.is_displayed()
 
 # Signup-Felder finden
 # Names-Feld
-driver.find_element(By.XPATH, "//input[@data-qa='signup-name']").send_keys(USER_DATA["account_information"]["first_name"])
+driver.find_element(By.XPATH, "//input[@data-qa='signup-name']").send_keys(USER_DATA["account_information"]["name"])
 
 # E-Mail-Feld
 driver.find_element(By.XPATH, "//input[@data-qa='signup-email']").send_keys(USER_DATA["account_information"]["email"])
