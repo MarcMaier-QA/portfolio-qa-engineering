@@ -30,78 +30,158 @@ USER_DATA = {
 }
 
 # Aufgabe 3 (Benutzer registrieren)
-# Setup: Browser starten
-driver = webdriver.Chrome()
-driver.get("http://automationexercise.com")
+def test_benutzer_registrieren():
+    driver = webdriver.Chrome()
+    driver.get("http://automationexercise.com")
 
-# Cookie-Banner schließen
-try:
-    einwilligen_btn = WebDriverWait(driver, 5).until(
-        EC.element_to_be_clickable((By.XPATH, "//p[contains(text(),'Einwilligen')]/ancestor::button"))
+    # Cookie-Banner schließen
+    try:
+        einwilligen_btn = WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable((By.XPATH, "//p[contains(text(),'Einwilligen')]/ancestor::button"))
+        )
+        einwilligen_btn.click()
+
+        # Warten bis Overlay weg ist
+        WebDriverWait(driver, 10).until(
+            EC.invisibility_of_element_located((By.CSS_SELECTOR, ".fc-dialog-overlay"))
+        )
+
+    except TimeoutException:
+        pass
+
+
+    # Warten, bis das Logo sichtbar ist (bis zu 10 Sekunden)
+    logo = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.XPATH, "//img[@alt='Website for automation practice']"))
     )
-    einwilligen_btn.click()
 
-    # Warten bis Overlay weg ist
-    WebDriverWait(driver, 10).until(
-        EC.invisibility_of_element_located((By.CSS_SELECTOR, ".fc-dialog-overlay"))
+    # Überprüft das logo
+    assert logo.is_displayed()
+
+    # Signup / Login-Button finden
+    driver.find_element(By.XPATH, "//a[text()=' Signup / Login']").click()
+
+    # Überprüfen das wir 'New User Signup!' sehen
+    signup_title = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.XPATH, "//h2[text()='New User Signup!']"))
     )
 
-except TimeoutException:
-    pass
+    # Überprüft den titel New User Signup!
+    assert signup_title.is_displayed()
 
+    # Signup-Felder finden
+    # Namens-Feld
+    driver.find_element(By.XPATH, "//input[@data-qa='signup-name']").send_keys(
+        USER_DATA["account_information"]["name"]
+    )
 
-# Warten, bis das Logo sichtbar ist (bis zu 10 Sekunden)
-logo = WebDriverWait(driver, 10).until(
-    EC.visibility_of_element_located((By.XPATH, "//img[@alt='Website for automation practice']"))
-)
+    # E-Mail-Feld
+    driver.find_element(By.XPATH, "//input[@data-qa='signup-email']").send_keys(
+        USER_DATA["account_information"]["email"]
+    )
 
-# Überprüft das logo
-assert logo.is_displayed()
+    # Signup-Button klicken
+    driver.find_element(By.XPATH, "//button[@data-qa='signup-button']").click()
 
-# Signup / Login-Button finden
-driver.find_element(By.XPATH, "//a[text()=' Signup / Login']").click()
+    # Überprüfen das wir 'Enter Account Information' sehen
+    account_info_title = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.XPATH, "//h2/b[text()='Enter Account Information']"))
+    )
 
-# Überprüfen das wir 'New User Signup!' sehen
-signup_title = WebDriverWait(driver, 10).until(
-    EC.visibility_of_element_located((By.XPATH, "//h2[text()='New User Signup!']"))
-)
+    # Überprüft den titel Enter Account Information
+    assert account_info_title.is_displayed(), "Titel 'Enter Account Information' NICHT gefunden!"
 
-# Überprüft den titel New User Signup!
-assert signup_title.is_displayed()
+    # Titel auswählen
+    driver.find_element(By.ID, USER_DATA["account_information"]["title_id"]).click()
 
-# Signup-Felder finden
-# Names-Feld
-driver.find_element(By.XPATH, "//input[@data-qa='signup-name']").send_keys(USER_DATA["account_information"]["name"])
+    # Password eingeben
+    driver.find_element(By.ID, "password").send_keys(USER_DATA["account_information"]["password"])
 
-# E-Mail-Feld
-driver.find_element(By.XPATH, "//input[@data-qa='signup-email']").send_keys(USER_DATA["account_information"]["email"])
+    # Dropdowns auswählen
+    # Tag
+    day_select = Select(driver.find_element(By.ID, "days"))
+    day_select.select_by_value(USER_DATA["account_information"]["birth_day"])
 
-# Signup-Button klicken
-driver.find_element(By.XPATH, "//button[@data-qa='signup-button']").click()
+    # Monat
+    month_select = Select(driver.find_element(By.ID, "months"))
+    month_select.select_by_value(USER_DATA["account_information"]["birth_month"])
 
-# Überprüfen das wir 'Enter Account Information' sehen
-account_info_title = WebDriverWait(driver, 10).until(
-    EC.visibility_of_element_located((By.XPATH, "//h2[text()='Enter Account Information']"))
-)
+    # Jahr
+    year_select = Select(driver.find_element(By.ID, "years"))
+    year_select.select_by_value(USER_DATA["account_information"]["birth_year"])
 
-# Überprüft den titel Enter Account Information
-assert account_info_title.is_displayed()
+    # Checkbox "Newsletter"
+    newsletter_checkbox = driver.find_element(By.ID, "newsletter")
+    if not newsletter_checkbox.is_selected():
+        newsletter_checkbox.click()
 
-# Titel auswählen
-driver.find_element(By.ID, USER_DATA["account_information"]["title_id"]).click()
+    # Checkbox "Optin"
+    optin_checkbox = driver.find_element(By.ID, "optin")
+    if not optin_checkbox.is_selected():
+        optin_checkbox.click()
 
-# Password eingeben
-driver.find_element(By.ID, "password").send_keys(USER_DATA["account_information"]["password"])
+    # Address Information ausfüllen
+    # First Name
+    driver.find_element(By.ID, "first_name").send_keys(USER_DATA["address_information"]["first_name"])
 
-# Dropdowns auswählen
-# Tag
-day_select = Select(driver.find_element(By.ID, "days"))
-day_select.select_by_value(USER_DATA["account_information"]["birth_day"])
+    # Last Name
+    driver.find_element(By.ID, "last_name").send_keys(USER_DATA["address_information"]["last_name"])
 
-# Monat
-month_select = Select(driver.find_element(By.ID, "months"))
-month_select.select_by_value(USER_DATA["account_information"]["birth_month"])
+    # Company
+    driver.find_element(By.ID, "company").send_keys(USER_DATA["address_information"]["company"])
 
-# Jahr
-year_select = Select(driver.find_element(By.ID, "years"))
-year_select.select_by_value(USER_DATA["account_information"]["birth_year"])
+    # Address
+    driver.find_element(By.ID, "address1").send_keys(USER_DATA["address_information"]["address"])
+
+    # Country (Dropdown)
+    country_select = Select(driver.find_element(By.ID, "country"))
+    country_select.select_by_visible_text(USER_DATA["address_information"]["country"])
+
+    # State
+    driver.find_element(By.ID, "state").send_keys(USER_DATA["address_information"]["state"])
+
+    # City
+    driver.find_element(By.ID, "city").send_keys(USER_DATA["address_information"]["city"])
+
+    # Zipcode
+    driver.find_element(By.ID, "zipcode").send_keys(USER_DATA["address_information"]["zipcode"])
+
+    # Mobile Number
+    driver.find_element(By.ID, "mobile_number").send_keys(USER_DATA["address_information"]["mobile_number"])
+
+    # Create Account anklicken
+    driver.find_element(By.XPATH, "//button[@data-qa='create-account']").click()
+
+    # Überprüft den titel: account-created!
+    account_created = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.XPATH, "//h2[@data-qa='account-created']"))
+    )
+
+    assert account_created.is_displayed(), "Account wurde NICHT erfolgreich erstellt!"
+
+    # Continue anklicken
+    driver.find_element(By.XPATH, "//a[@data-qa='continue-button']").click()
+
+    logged_in_element = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.XPATH, "//a[contains(text(), 'Logged in as')]"))
+    )
+
+    # Jetzt den Namen auslesen
+    logged_in_name = driver.find_element(By.XPATH, "//a[contains(text(), 'Logged in as')]/b").text
+
+    assert logged_in_name == USER_DATA["account_information"]["name"], ""
+
+    # Delete account anklicken
+    driver.find_element(By.XPATH, "//a[@href='/delete_account']").click()
+
+    # Überprüfen ob account gelöscht
+    deleted_msg = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.XPATH, "//h2[@data-qa='account-deleted']"))
+    )
+
+    assert deleted_msg.is_displayed(), "Account wurde NICHT erfolgreich gelöscht!"
+
+    # Continue anklicken
+    driver.find_element(By.XPATH, "//a[@data-qa='continue-button']").click()
+
+    driver.quit()
