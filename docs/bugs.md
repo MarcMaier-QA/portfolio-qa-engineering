@@ -14,13 +14,13 @@
   1. Wähle 9x `Cherries` + 1x `Pink Lady Apples` (Warenwert = 25 €)  
   2. Klicke auf **Add to Cart**  
   3. Öffne den Warenkorb, Versandkosten prüfen (0 €)  
-  4. Entferne `Pink Lady Apples` → Warenwert < 25 €  
+  4. Entferne **alle** `Cherries` → Warenwert < 25 €  
   5. Versandkosten erneut prüfen
 * **Erwartetes Ergebnis:** Versandkosten sollten wieder auf 5 € gesetzt werden, Total korrekt aktualisiert.
 * **Tatsächliches Ergebnis:** Versandkosten bleiben auf 0 €, Total nicht korrekt aktualisiert.
 * **Screenshots / Anhänge:**
   * ![Versandkosten_vor_Entfernung.png](screenshots/Versandkosten_vor_Entfernung.png)
-  * ![Versandkosten_nach_Entfernung.png](screenshots/Versandkosten_nach_Entfernung.png)
+  * ![Versandkosten_nach_der_Entfernung.png](screenshots/Versandkosten_nach_der_Entfernung.png)
 * **Zusätzliche Informationen:** Kritischer Fehler, da die Versandregel nicht korrekt umgesetzt wird.
 
 ---
