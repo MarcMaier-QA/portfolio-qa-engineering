@@ -6,6 +6,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
+login_email = "test@test32567.de"
+password_user = "test123"
+
 @pytest.fixture
 def driver():
     """Startet ChromeDriver vor jedem Test und schließt ihn danach."""
@@ -28,8 +31,8 @@ def login(driver):
     password = driver.find_element(By.ID, "password")
     login_btn = driver.find_element(By.ID, "login-btn")
 
-    username.send_keys("standard_user")
-    password.send_keys("secret_sauce")
+    username.send_keys(login_email)
+    password.send_keys(password_user)
     login_btn.click()
 
     # Warte, bis der Shop geladen ist
