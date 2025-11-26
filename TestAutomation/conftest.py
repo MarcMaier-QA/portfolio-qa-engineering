@@ -25,19 +25,25 @@ def driver():
 @pytest.fixture
 def login(driver):
     """Loggt einen gültigen Nutzer für alle Tests ein."""
-    driver.get("https://grocerymate-qa.vercel.app/login")
+    driver.get("https://grocerymate.masterschool.com/auth")
 
-    username = driver.find_element(By.ID, "username")
-    password = driver.find_element(By.ID, "password")
-    login_btn = driver.find_element(By.ID, "login-btn")
+    # Email-Feld
+    email = driver.find_element(By.XPATH, "//input[@placeholder='Email address']")
 
-    username.send_keys(login_email)
+    # Passwort-Feld
+    password = driver.find_element(By.XPATH, "//input[@placeholder='Password']")
+
+    # Login-Button
+    login_btn = driver.find_element(By.XPATH, "//button[contains(.,'Sign In')]")
+
+    # Eingeben
+    email.send_keys(login_email)
     password.send_keys(password_user)
     login_btn.click()
 
-    # Warte, bis der Shop geladen ist
+    # Warten, bis der Shop geladen ist
     WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located((By.ID, "shop-page"))
+        EC.url_to_be( "https://grocerymate.masterschool.com/")
     )
 
     return driver
