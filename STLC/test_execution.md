@@ -10,7 +10,7 @@
 
 * **Precondition:** Eingeloggt mit Email = `test@test32567.de`, Password = `test123`, Produkt `Oranges` gekauft.
 * **Steps:**
-  1. Produktseite geöffnet
+  1. Produktseite von `Oranges` öffnen.
   2. Scrolle zum Bewertungsbereich.
   3. Wähle 5 Sterne aus.
   4. Trage Kommentar "Tolles Produkt!" ein.
@@ -27,7 +27,7 @@
 
 * **Precondition:** Eingeloggt mit Email = `test@test32567.de`, Password = `test123`, Produkt `Loose Pears` gekauft.
 * **Steps:**
-  1. Produktseite geöffnet
+  1. Produktseite von `Loose Pears` öffnen.
   2. Scrolle zum Bewertungsbereich.
   3. Wähle 4 Sterne aus.
   4. Lasse Kommentar-Feld leer.
@@ -44,7 +44,7 @@
 
 * **Precondition:** Eingeloggt mit Email = `test@test32567.de`, Password = `test123`, Produkt `Cherries` gekauft.
 * **Steps:**
-  1. Produktseite geöffnet
+  1. Produktseite von `Cherries` öffnen.
   2. Scrolle zum Bewertungsbereich.
   3. Lasse Sterne ungewählt.
   4. Trage Kommentar `Gut` ein.
