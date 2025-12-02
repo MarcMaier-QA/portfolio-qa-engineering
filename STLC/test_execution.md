@@ -19,7 +19,7 @@
 * **Actual Result:** Bewertung erscheint mit 5 Sternen und Username aber ohne Kommentar.
 * ![Eingegebener_kommentar.png](../docs/screenshots/Eingegebener_kommentar.png)
 * ![Angezeigter_Kommentar.png](../docs/screenshots/Angezeigter_Kommentar.png)
-* **Status:** *FAILED*
+* **Status:** <font color="red">FAILED</font>
 
 ---
 
@@ -36,7 +36,7 @@
 * **Actual Result:** Wie erwartet werden 4 Sterne ohne kommentar korrekt angezeigt.
 * ![vier_sterne_kein_Kommentar.png](../docs/screenshots/vier_sterne_kein_Kommentar.png)
 * ![Anzeige_vier_sterne_kein_Kommentar.png](../docs/screenshots/Anzeige_vier_sterne_kein_Kommentar.png)
-* **Status:** PASSED
+* **Status:** <font color="Green">PASSED</font>
 
 ---
 
@@ -54,7 +54,7 @@
     `Invalid input for the field 'Rating'. Please check your input.` aus.
 * ![Null_sterne_text_gut.png](../docs/screenshots/Null_sterne_text_gut.png)
 * ![Fehlermeldung_bei_null_sternen.png](../docs/screenshots/Fehlermeldung_bei_null_sternen.png)
-* **Status:** PASSED
+* **Status:** <font color="Green">PASSED</font>
 
 ---
 
@@ -70,7 +70,7 @@
 * **Actual Result:** Zugriff auf alkoholische Produkte freigeben, Popup mit Bestätigung erscheint und verschwindet automatisch.
 * ![Age-Popup.png](../docs/screenshots/Age-Popup.png)
 * ![Altersangabe_mit_27-08-2007.png](../docs/screenshots/Altersangabe_mit_27-08-2007.png)
-* **Status:** PASSED
+* **Status:** <font color="Green">PASSED</font>
 
 ---
 
@@ -86,7 +86,7 @@
 * **Actual Result:** Zugriff auf alkoholische Produkte verweigert, Warn-/Hinweis-Popup erscheint und verschwindet automatisch.
 * ![Altersangabe_mit_27-08-2008.png](../docs/screenshots/Altersangabe_mit_27-08-2008.png)
 * ![Underage.png](../docs/screenshots/Underage.png)
-* **Status:** PASSED
+* **Status:** <font color="Green">PASSED</font>
 
 ---
 
@@ -102,7 +102,7 @@
 * **Actual Result:** Wie erwartet wird angenommen das der kunde unter 18 ist und bekommt den warn-Popup.
 * ![Altersangabe_LEER.png](../docs/screenshots/Altersangabe_LEER.png)
 * ![Underage.png](../docs/screenshots/Underage.png)
-* **Status:** PASSED
+* **Status:** <font color="Green">PASSED</font>
 
 ---
 
@@ -118,7 +118,7 @@
 * **Actual Result:** Datum nicht erkannt, Nutzer wird als unter 18 behandelt, Warn-Popup erscheint.
 * ![Eingegebene_daten_bei_Altersabfrage.png](../docs/screenshots/Eingegebene_daten_bei_Altersabfrage.png)
 * ![Underage.png](../docs/screenshots/Underage.png)
-* **Status:** PASSED
+* **Status:** <font color="Green">PASSED</font>
 
 ---
 
@@ -146,7 +146,7 @@
 * **Expected Result:** Versandkosten = 5 €, Total = 10 €
 * **Actual Result:** Versandkosten korrekt bei 5 €, Total korrekt bei 10 € (5 € Versand + 5 € Wahrenwert).
 * ![Zwei_Cherries.png](../docs/screenshots/Zwei_Cherries.png)
-* **Status:** PASSED
+* **Status:** <font color="Green">PASSED</font>
 
 ---
 
@@ -165,4 +165,4 @@
 * ![Versandkosten_vor_Entfernung.png](../docs/screenshots/Versandkosten_vor_Entfernung.png)
 * ![Versandkosten_nach_Entfernung.png](../docs/screenshots/Versandkosten_nach_Entfernung.png) 
 * ![Versandkosten_nach_der_Entfernung.png](../docs/screenshots/Versandkosten_nach_der_Entfernung.png)
-* **Status:** *FAILED*
+* **Status:** <font color="red">FAILED</font>
