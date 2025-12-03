@@ -154,15 +154,14 @@
 
 * **Precondition:** Eingeloggt mit Email = `test@test32567.de`, Password = `test123`, Warenkorb leer, Versandregel: 5 €, kostenlos ab 25 €
 * **Steps:**
-  1. Wähle 9x `Cherries` + 1x `Pink Lady Apples` (25 €)
+  1. Wähle 7x `Cherries` + 1x `Pink Lady Apples` (20 €)
   2. Klicke auf **Add to Cart**
   3. Öffne Warenkorb → Versandkosten prüfen (0 €)
-  4. Entferne `Pink Lady Apples` → Warenwert <25 €
+  4. Entferne `Pink Lady Apples` damit der Warenwert <20 € entspricht
   5. Versandkosten erneut prüfen
 * **Expected Result:** Versandkosten wieder auf 5 € gesetzt
 * **Observed Result / Bug:** Versandkosten bleiben 0 €
 * **Actual Result:** Versand wird **NICHT** auf 5 € hoch gesetzt sondern bleibt bei 0 €.
-* ![Versandkosten_vor_Entfernung.png](../docs/screenshots/Versandkosten_vor_Entfernung.png)
-* ![Versandkosten_nach_Entfernung.png](../docs/screenshots/Versandkosten_nach_Entfernung.png) 
-* ![Versandkosten_nach_der_Entfernung.png](../docs/screenshots/Versandkosten_nach_der_Entfernung.png)
+* ![Versandkosten_vor_Entfernug_von_produkt.png](../docs/screenshots/Versandkosten_vor_Entfernug_von_produkt.png)
+* ![Versandkosten_nach_Entfernung.png](../docs/screenshots/Versandkosten_nach_Entfernung.png)
 * **Status:** <font color="red">FAILED</font>
