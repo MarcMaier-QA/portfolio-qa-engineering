@@ -19,8 +19,8 @@
 * **Erwartetes Ergebnis:** Versandkosten sollten wieder auf 5 € gesetzt werden, Total korrekt aktualisiert.
 * **Tatsächliches Ergebnis:** Versandkosten bleiben auf 0 €, Total nicht korrekt aktualisiert.
 * **Screenshots / Anhänge:**
-  * ![Versandkosten_vor_Entfernung.png](screenshots/Versandkosten_vor_Entfernung.png)
-  * ![Versandkosten_nach_der_Entfernung.png](screenshots/Versandkosten_nach_der_Entfernung.png)
+  * ![Versandkosten_vor_Entfernug_von_produkt.png](screenshots/Versandkosten_vor_Entfernug_von_produkt.png)
+  * ![Versandkosten_nach_Entfernung.png](screenshots/Versandkosten_nach_Entfernung.png)
 * **Zusätzliche Informationen:** Kritischer Fehler, da die Versandregel nicht korrekt umgesetzt wird.
 
 ---
