@@ -1,6 +1,6 @@
 from selenium.webdriver.common.by import By
-from ..pages.base_page import BasePage
-from ..helpers.waiters import Waiter
+from Hausübungen.pages.base_page import BasePage
+from Hausübungen.helpers.waiters import Waiter
 
 class SignupLoginPage(BasePage):
     # Locators
