@@ -1,43 +1,31 @@
 import pytest
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from pages.shop_page import ShopPage
+from pages.age_verification_popup import AgeVerificationPopup
 
 
 @pytest.mark.parametrize("birthdate, expected_result", [
     ("27-08-2007", "success"),   # TC-04: ~18 Jahre = Zugang erlaubt
     ("27-08-2008", "warning"),   # TC-05: ~17 Jahre = Zugang verweigert
     ("", "warning"),             # TC-06: DD-MM-YYYY leer = warning
+    ("27.08.2007", "warning"),   # TC-07: Falsches Format = warning
 ])
-
 
 def test_age_verification(login, birthdate, expected_result):
     driver = login
 
-    # In den Shop navigieren
-    shop_btn = WebDriverWait(driver, 5).until(
-        EC.element_to_be_clickable((By.XPATH, "//a[text()='Shop']"))
-    )
-    shop_btn.click()
+    shop_page = ShopPage(driver)
+    age_popup = AgeVerificationPopup(driver)
 
-    # Alters-Popup abwarten
-    date_input = WebDriverWait(driver, 5).until(
-        EC.visibility_of_element_located((By.XPATH, "//input[@placeholder='DD-MM-YYYY']"))
-    )
-    date_input.clear()
-    if birthdate:
-        date_input.send_keys(birthdate)
+    # 1. Aktion: Shop öffnen (Link ist in ShopPage)
+    shop_page.click_shop_button()
 
-    # Bestätigen
-    confirm_btn = driver.find_element(By.XPATH, "//button[text()='Confirm']")
-    confirm_btn.click()
+    # 2. Aktion: Datum eingeben und bestätigen (Logik ist in AgeVerificationPopup)
+    age_popup.enter_birthdate_and_confirm(birthdate)
 
-    # Erwartetes Verhalten prüfen
+    # 3. Assertion: Verhalten prüfen
     if expected_result == "success":
-        WebDriverWait(driver, 5).until(
-            EC.visibility_of_element_located((By.XPATH, "//div[contains(text(),'You are of age')]"))
-        )
+        assert age_popup.is_success_message_displayed(), \
+            f"TC-04 fehlgeschlagen: Erwartete Erfolgsmeldung nicht gefunden für Datum {birthdate}"
     else:
-        WebDriverWait(driver, 5).until(
-            EC.visibility_of_element_located((By.XPATH, "//div[contains(text(),'You are underage')]"))
-        )
+        assert age_popup.is_warning_message_displayed(), \
+            f"TC-05/06/07 fehlgeschlagen: Erwartete Warnmeldung nicht gefunden für Datum {birthdate}"
