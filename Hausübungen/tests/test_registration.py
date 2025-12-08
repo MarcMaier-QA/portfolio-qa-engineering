@@ -1,10 +1,14 @@
 from selenium.webdriver.common.by import By
-from Hausübungen.pages import SignupLoginPage
-from Hausübungen.pages import AccountInfoPage
-from Hausübungen.pages import AddressPage
-from Hausübungen.pages import AccountCreatedPage
-from Hausübungen.pages import HomePage
-from Hausübungen.pages import DeleteAccountPage
+
+# Pages
+from Hausübungen.pages.signup_login_page import SignupLoginPage
+from Hausübungen.pages.account_info_page import AccountInfoPage
+from Hausübungen.pages.address_page import AddressPage
+from Hausübungen.pages.account_created_page import AccountCreatedPage
+from Hausübungen.pages.home_page import HomePage
+from Hausübungen.pages.delete_account_page import DeleteAccountPage
+
+# Testdaten
 from Hausübungen.userdata.user_data import user_valid
 
 
@@ -15,24 +19,25 @@ def test_registration(driver):
     # Signup/Login
     signup = SignupLoginPage(driver)
 
-    # Direkt das Popup schließen, falls vorhanden
+    # Popup schließen
     signup.close_popup()
 
-    # Signup/Login-Link auf der Startseite anklicken
+    # Signup/Login-Link anklicken
     signup.driver.find_element(By.CSS_SELECTOR, "a[href='/login']").click()
 
-    # Signup-Titel prüfen
-    element = signup.check_signup_title()
+    # Titel prüfen
+    signup.check_signup_title()
 
+    # Signup ausfüllen
     signup.signup(
         user_valid["account"]["name"],
         user_valid["account"]["email"]
     )
 
     # Account Info
-    accountInfoPage = AccountInfoPage(driver)
-    accountInfoPage.check_title()
-    accountInfoPage.fill_account_info(user_valid["account"])
+    account_info = AccountInfoPage(driver)
+    account_info.check_title()
+    account_info.fill_account_info(user_valid["account"])
 
     # Address
     addressPage = AddressPage(driver)
@@ -43,12 +48,12 @@ def test_registration(driver):
     accountCreatedPage.verify_created()
     accountCreatedPage.continue_click()
 
-    # Logged in
+    # Home / Logged in
     homePage = HomePage(driver)
     homePage.check_logged_in()
     homePage.delete_account()
 
     # Account Deleted
-    deleteAccountPage = DeleteAccountPage(driver)
-    deleteAccountPage.verify_deleted()
-    deleteAccountPage.continue_click()
+    deletedAccountPage = DeleteAccountPage(driver)
+    deletedAccountPage.verify_deleted()
+    deletedAccountPage.continue_click()

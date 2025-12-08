@@ -26,9 +26,11 @@ class SignupLoginPage(BasePage):
         self.waiter.clickable(self.SIGNUP_LOGIN_LINK).click()
 
     def check_signup_title(self):
-        """Prüft, ob der Signup-Titel sichtbar ist"""
+        """Stellt sicher, dass der Signup-Titel sichtbar ist"""
         self.close_popup()
-        return self.waiter.visible(self.TITLE)
+        element = self.waiter.visible(self.TITLE)
+        assert element.is_displayed(), "Signup-Titel wurde nicht angezeigt"
+        return element
 
     def signup(self, name, email):
         """Füllt Name und Email für die Account-Erstellung aus und klickt Signup"""
