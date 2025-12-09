@@ -1,115 +1,48 @@
 import pytest
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+from pages.product_page import ProductPage
+
+from Hausübungen.Selenium_grundlage_aufgabe1_login_script import product
+from Hausübungen.tests.conftest import driver
+from TestAutomation.utils.constants import PRODUCT_ORANGES_URL, PRODUCT_PEARS_URL, TEST_USER_NAME
 from selenium.common.exceptions import TimeoutException
-
-
-# Helper-Funktionen
-def go_to_product(driver, product_url):
-    driver.get(product_url)
-
-
-def rate_stars(driver, stars=0):
-    star_5 = WebDriverWait(driver, 5).until(
-        EC.element_to_be_clickable(
-            (By.XPATH, "//div[contains(@class,'rating-stars')]/span[5]")
-        )
-    )
-    star_5.click()
-
-
-def write_comment(driver, comment_text=""):
-    if comment_text:
-        comment_box = WebDriverWait(driver, 5).until(
-            EC.visibility_of_element_located((By.XPATH, "//textarea[@placeholder='What is your view?']"))
-        )
-        comment_box.send_keys(comment_text)
-
-
-def submit(driver):
-    send_btn = driver.find_element(By.XPATH, "//button[contains(.,'Send')]")
-    send_btn.click()
-
-
-def verify_comment(driver, author, comment_text):
-    comments = driver.find_elements(By.XPATH, "//div[@class='comment-body']")
-    found = False
-    for c in comments:
-        author_elem = c.find_element(By.TAG_NAME, "strong")
-        text_elem = c.find_element(By.TAG_NAME, "p")
-        if author_elem.text == author and text_elem.text == comment_text:
-            found = True
-            break
-    assert found, f"Kommentar von '{author}' mit Text '{comment_text}' wurde nicht gefunden"
-
-
-def verify_rating(driver, expected_stars):
-    rating_span = WebDriverWait(driver, 5).until(
-        EC.visibility_of_element_located(
-            (By.XPATH, "//span[@class='small']")
-        )
-    )
-    stars_text = rating_span.text.strip()   # Beispiel: "(4)"
-    stars_number = int(stars_text.replace("(", "").replace(")", ""))
-
-    assert stars_number == expected_stars, \
-        f"Erwartet: {expected_stars} Sterne, angezeigt: {stars_number}"
-
-
-def buy_product(driver):
-    pass
-
-
-#-----------------------------------------------------------------------------------------------------------------------
-
-
 
 # Tests
 def test_5_stars_with_comment(login):
+    """TC-01: 5 Sterne mit Kommentar (Prüft den bekannten Kommentar-Bug)."""
     driver = login
-    product_url = "https://grocerymate.masterschool.com/product/66b3a57b3fd5048eacb4798f"  # Oranges
-# todo:
-    # <- heir die kaufe produkt einfügen
-    go_to_product(driver, product_url)
+    product_page = ProductPage(driver)
 
-    # Prüfen, ob Kommentarfeld sichtbar ist
+    # 1. Navigation
+    product_page.navigate_to(PRODUCT_ORANGES_URL)
+
+    # 2. Kommentar & Sterne
+    comment = "Tolles Produkt!"
     try:
-        comment_box = WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located(
-                (By.XPATH, "//textarea[@placeholder='What is your view?']")
-            )
-        )
+        # Versucht, das Produkt zu bewerten
+        product_page.rate_product(stars=5, comment=comment)
     except TimeoutException:
-        pytest.skip("Kommentarfeld nicht sichtbar. Produkt vermutlich nicht gekauft.")
+        # Tritt ein, wenn das Produkt nicht bewertbar ist z.b noch nicht gekauft
+        pytest.skip("Bewertungsformular nicht sichtbar. Produkt vermutlich nicht gekauft.")
 
-    rate_stars(driver, 5)
-    write_comment(driver, "Tolles Produkt!")
-    submit(driver)
-
-    verify_comment(driver, author="Testi Mc_tester", comment_text="Tolles Produkt!")
+    # 3. Assertion: Testet den BUG
+    # Die Methode is_comment_visible übernimmt die komplette Logik von verify_comment.
+    assert product_page.is_comment_visible(author=TEST_USER_NAME, comment_text=comment) == False,\
+        "Der Kommentar wurde unerwartet angezeigt. TC-01 ist unerwartet PASSED."
 
 
 def test_4_stars_without_comment(login):
+    """TC-02: 4 Sterne ohne Kommentar"""
     driver = login
-    product_url = "https://grocerymate.masterschool.com/product/66b3a57b3fd5048eacb47990"
+    product_page = ProductPage(driver)
 
-    go_to_product(driver, product_url)
+    # 1. Navigation
+    product_page.navigate_to(PRODUCT_PEARS_URL)
 
-    # Prüfen, ob Nutzer kommentieren darf, suchen das Kommentar-Feld
+    # 2. Aktion: Nur Sterne setzen
     try:
-        WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located(
-                (By.XPATH, "//textarea[@placeholder='What is your view?']")
-            )
-        )
+        product_page.rate_product(stars=4)
     except TimeoutException:
-        pytest.skip("Kommentarfeld nicht sichtbar. Produkt vermutlich nicht gekauft.")
+        # Tritt ein, wenn das Produkt nicht bewertbar ist z.b noch nicht gekauft
+        pytest.skip("Bewertungsformular nicht sichtbar. Produkt vermutlich nicht gekauft.")
 
-    # Nur Sterne setzen
-    rate_stars(driver, 4)
-    submit(driver)
-
-    # Sterne überprüfen anhand der Anzeige (4)
-    verify_rating(driver, expected_stars=4)
-
+    assert product_page.get_displayed_rating() == 4, "Sterne-Anzeige falsch nach 4-Sterne-Bewertung."
