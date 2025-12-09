@@ -1,8 +1,8 @@
 import re
 import pytest
-from pages.shop_page import ShopPage
-from pages.checkout_page import CheckoutPage
-from pages.age_verification_popup import AgeVerificationPopup
+from TestAutomation.pages.shop_page import ShopPage
+from TestAutomation.pages.checkout_page import CheckoutPage
+from TestAutomation.pages.age_verification_popup import AgeVerificationPopup
 from TestAutomation.utils.constants import PRODUCT_APPLES, PRODUCT_CHERRIES
 
 def clean_currency(currency_string: str) -> float:

@@ -1,5 +1,5 @@
 import pytest
-from pages.product_page import ProductPage
+from TestAutomation.pages.product_page import ProductPage
 
 from Hausübungen.Selenium_grundlage_aufgabe1_login_script import product
 from Hausübungen.tests.conftest import driver

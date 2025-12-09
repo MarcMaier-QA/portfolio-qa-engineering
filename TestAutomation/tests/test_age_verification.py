@@ -1,6 +1,6 @@
 import pytest
-from pages.shop_page import ShopPage
-from pages.age_verification_popup import AgeVerificationPopup
+from TestAutomation.pages.shop_page import ShopPage
+from TestAutomation.pages.age_verification_popup import AgeVerificationPopup
 
 
 @pytest.mark.parametrize("birthdate, expected_result", [
