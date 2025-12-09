@@ -2,7 +2,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from TestAutomation.utils.constants import DEFAULT_WAIT_TIME
+from TestAutomation.utils.constants import DEFAULT_WAIT_TIME, LOGIN_URL
 
 
 class LoginPage:
@@ -15,6 +15,12 @@ class LoginPage:
         self.LOGIN_BUTTON = (By.XPATH, "//button[contains(.,'Sign In']")
         self.HOME_PAGE_IDENTIFIER = (By.XPATH, "//a[@href='/store' and text()='Shop']")
 
+    def navigate_to_login(self, url: str = LOGIN_URL):
+        """Navigiert zur Login-Seite und wartet, bis das Email-Feld sichtbar ist."""
+        self.driver.get(url)
+        WebDriverWait(self.driver, DEFAULT_WAIT_TIME).until(
+            EC.visibility_of_element_located(self.EMAIL_INPUT)
+        )
 
     def login(self, email: str, password: str):
         """Führt die Anmeldung aus."""
