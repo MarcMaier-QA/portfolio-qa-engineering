@@ -30,3 +30,6 @@ PRODUCT_CHERRIES_URL = f"{BASE_URL}/product/66b3a57b3fd5048eacb47991"
 
 # Standard-Geburtsdatum für Altersfreigabe (älter als 18)
 AGE_CONFIRMATION_DATE = "27-08-2007"
+
+# Erwartete Fehlermeldung
+RATING_REQUIRED_ERROR = "Invalid input for the field 'Rating'. Please check your input."

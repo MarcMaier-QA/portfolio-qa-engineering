@@ -1,9 +1,7 @@
 import pytest
 from TestAutomation.pages.product_page import ProductPage
-
-from Hausübungen.Selenium_grundlage_aufgabe1_login_script import product
-from Hausübungen.tests.conftest import driver
-from TestAutomation.utils.constants import PRODUCT_ORANGES_URL, PRODUCT_PEARS_URL, TEST_USER_NAME
+from TestAutomation.utils.constants import (PRODUCT_ORANGES_URL, PRODUCT_PEARS_URL, TEST_USER_NAME,
+                                            PRODUCT_CHERRIES_URL, RATING_REQUIRED_ERROR)
 from selenium.common.exceptions import TimeoutException
 
 # Tests
@@ -46,3 +44,26 @@ def test_4_stars_without_comment(login):
         pytest.skip("Bewertungsformular nicht sichtbar. Produkt vermutlich nicht gekauft.")
 
     assert product_page.get_displayed_rating() == 4, "Sterne-Anzeige falsch nach 4-Sterne-Bewertung."
+
+
+def test_no_stars_with_comment(login):
+    """TC-03: Bewertung ohne Sterne (nur Text). Sollte fehlschlagen und Fehlermeldung anzeigen."""
+    driver = login
+    product_page = ProductPage(driver)
+
+    # 1. Navigation
+    product_page.navigate_to(PRODUCT_CHERRIES_URL)
+
+    # 2. Kommentar & Sterne
+    comment = "Gut"
+    try:
+        # Versucht, das Produkt zu bewerten
+        # WICHTIG! mit 0 Sternen
+        error_message = product_page.rate_product(stars=0, comment=comment)
+    except TimeoutException:
+        # Tritt ein, wenn das Produkt nicht bewertbar ist z.b noch nicht gekauft
+        pytest.skip("Bewertungsformular nicht sichtbar. Produkt vermutlich nicht gekauft.")
+
+    # 3. Assertion: Überprüft die Konstante
+    assert error_message == RATING_REQUIRED_ERROR, \
+        f"Unerwartete Fehlermeldung angezeigt. Erwartet: '{RATING_REQUIRED_ERROR}'"
