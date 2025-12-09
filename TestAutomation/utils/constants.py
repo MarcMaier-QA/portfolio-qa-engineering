@@ -1,5 +1,3 @@
-# utils/constants.py
-
 # --- Basis-Konfiguration (URLs und Timeouts) ---
 
 BASE_URL = "https://grocerymate.masterschool.com"
