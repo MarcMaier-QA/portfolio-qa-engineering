@@ -12,7 +12,7 @@ class LoginPage:
         # Locators
         self.EMAIL_INPUT = (By.XPATH, "//input[@placeholder='Email address']")
         self.PASSWORD_INPUT = (By.XPATH, "//input[@placeholder='Password']")
-        self.LOGIN_BUTTON = (By.XPATH, "//button[contains(.,'Sign In']")
+        self.LOGIN_BUTTON = (By.XPATH, "//button[contains(.,'Sign In')]")
         self.HOME_PAGE_IDENTIFIER = (By.XPATH, "//a[@href='/store' and text()='Shop']")
 
     def navigate_to_login(self, url: str = LOGIN_URL):

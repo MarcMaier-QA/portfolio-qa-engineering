@@ -12,7 +12,7 @@ class ShopPage:
 
         # Locators
         self.SHOP_BUTTON = (By.XPATH, "//a[text()='Shop']")
-        self.PRODUCT_CARD_GENERAL = (By.XPATH, "//div[contains(@class,'product-card']")
+        self.PRODUCT_CARD_GENERAL = (By.XPATH, "//div[contains(@class,'product-card')]")
         self.PRODUCT_CARD_BY_NAME = lambda name: (By.XPATH, f"//p[@class='lead' and text()='{name}']/ancestor::div[contains(@class,'product-card)]")
         self.QUANTITY_INPUT = (By.XPATH, ".//input[@type='number']")
         self.ADD_TO_CARD_BUTTON = (By.XPATH, ".//button[contains(@class,'btn-cart')]")
