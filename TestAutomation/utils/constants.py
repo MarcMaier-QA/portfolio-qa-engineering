@@ -1,4 +1,4 @@
-# --- Basis-Konfiguration (URLs und Timeouts) ---
+# Basis-Konfiguration (URLs und Timeouts)
 
 BASE_URL = "https://grocerymate.masterschool.com"
 
@@ -41,6 +41,11 @@ FREE_SHIPPING_THRESHOLD = 20.00 # Gratis Versand ab (20.00€)
 PRODUCT_ORANGES_URL = f"{BASE_URL}/product/66b3a57b3fd5048eacb4798f"
 PRODUCT_PEARS_URL = f"{BASE_URL}/product/66b3a57b3fd5048eacb47990"
 PRODUCT_CHERRIES_URL = f"{BASE_URL}/product/66b3a57b3fd5048eacb47991"
+
+# Ignis French Grain Vodka
+# Alkoholische Produkte (Shop / Altersprüfung)
+PRODUCT_IGNIS_VODKA_NAME = "Ignis French Grain Vodka"
+PRODUCT_IGNIS_VODKA_URL = f"{BASE_URL}/product/66b3a57b3fd5048eacb47a8c"
 
 # Standard-Geburtsdatum für Altersfreigabe (älter als 18)
 AGE_CONFIRMATION_DATE = "27-08-2007"
