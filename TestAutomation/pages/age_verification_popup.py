@@ -1,58 +1,39 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.remote.webdriver import WebDriver
-from TestAutomation.utils.constants import DEFAULT_WAIT_TIME, AGE_CONFIRMATION_DATE
+from TestAutomation.pages.base_page import BasePage
 
 
-class AgeVerificationPopup:
-    def __init__(self, driver):
-        self.driver = driver
+class AgeVerificationPopup(BasePage):
 
-        # Locators
-        self.DATE_INPUT = (By.XPATH, "//input[@placeholder='DD-MM-YYYY']")
-        self.CONFIRM_BTN = (By.XPATH, "//button[text()='Confirm']")
-        self.SUCCESS_MSG = (By.XPATH, "//div[contains(text(),'You are of age')]")
-        self.UNDERAGE_MSG = (By.XPATH, "//div[contains(text(),'You are underage')]")
 
-    def enter_birthdate_and_confirm(self, birthdate: str):
-        """Gibt das Geburtsdatum ein und klickt auf Bestätigen"""
-        date_input = WebDriverWait(self.driver, DEFAULT_WAIT_TIME).until(
-            EC.visibility_of_element_located(self.DATE_INPUT)
-        )
-        date_input.clear()
-        if birthdate:
-            date_input.send_keys(birthdate)
+    # Locators
+    POPUP_CONTAINER = (By.XPATH, "//div[contains(@class,'age-verification')]")
 
-        self.driver.find_element(*self.CONFIRM_BTN).click()
+    DATE_INPUT = (By.XPATH, "//input[@placeholder='DD-MM-YYYY']")
+    CONFIRM_BUTTON = (By.XPATH, "//button[normalize-space()='Confirm']")
 
-    def confirm_age(self, birthdate: str = AGE_CONFIRMATION_DATE):
-        """Führt die Altersbestätigung mit dem Standarddatum durch"""
-        try:
-            self.enter_birthdate_and_confirm(birthdate)
-            WebDriverWait(self.driver, 5).until(
-                EC.invisibility_of_element_located(self.DATE_INPUT)
-            )
-        except:
-            # Fals das popup nicht inerhalb von 5 sec erscheint, ignorieren wir es
-            pass
+    SUCCESS_MESSAGE = (By.XPATH, "//div[contains(text(),'You are of age')]")
+    WARNING_MESSAGE = (By.XPATH, "//div[contains(text(),'You are underage')]")
 
-    def is_success_message_displayed(self):
-        """Prüft, ob die 'Erfolgsmeldung' sichtbar ist"""
-        try:
-            WebDriverWait(self.driver, DEFAULT_WAIT_TIME).until(
-                EC.visibility_of_element_located(self.SUCCESS_MSG)
-            )
-            return True
-        except:
-            return False
 
-    def is_warning_message_displayed(self):
-        """Prüft, ob die 'Warnmeldung' sichtbar ist"""
-        try:
-            WebDriverWait(self.driver, DEFAULT_WAIT_TIME).until(
-                EC.visibility_of_element_located(self.UNDERAGE_MSG)
-            )
-            return True
-        except:
-            return False
+    # State checks
+    def is_popup_displayed(self) -> bool:
+        return self.is_visible(self.DATE_INPUT)
+
+    def is_success_message_displayed(self) -> bool:
+        return self.is_visible(self.SUCCESS_MESSAGE)
+
+    def is_warning_message_displayed(self) -> bool:
+        return self.is_visible(self.WARNING_MESSAGE)
+
+
+    # Actions
+    def enter_birthdate(self, birthdate: str):
+        self.type(self.DATE_INPUT, birthdate)
+
+    def confirm(self):
+        self.click(self.CONFIRM_BUTTON)
+
+    def submit_birthdate(self, birthdate: str):
+        self.enter_birthdate(birthdate)
+        self.confirm()

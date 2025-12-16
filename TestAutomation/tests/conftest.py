@@ -12,7 +12,6 @@ def driver():
     options.add_argument("--start-maximized")
     # options.add_argument("--headless")  # optional: Browser unsichtbar
     driver = webdriver.Chrome(options=options)
-    driver.implicitly_wait(3)
     yield driver
     driver.quit()
 

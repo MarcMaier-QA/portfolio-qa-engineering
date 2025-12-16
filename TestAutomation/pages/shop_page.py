@@ -1,88 +1,109 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from TestAutomation.utils.constants import DEFAULT_WAIT_TIME, SHOP_URL
-import time
+from TestAutomation.pages.base_page import BasePage
+from TestAutomation.utils.constants import SHOP_URL
 
 
-class ShopPage:
-    def __init__(self, driver):
-        self.driver = driver
+class ShopPage(BasePage):
+    # Navigation / Filters
+    SHOP_BUTTON = (By.XPATH, "//a[text()='Shop']")
+    ALCOHOL_FILTER = (By.XPATH, "//a[normalize-space()='Alocohol']")
+    UNDERAGE_NOTICE = (By.XPATH, "//h2[normalize-space()='Underage Notice']")
 
-        # Locators
-        self.SHOP_BUTTON = (By.XPATH, "//a[text()='Shop']")
-        self.PRODUCT_CARD_GENERAL = (By.XPATH, "//div[contains(@class,'product-card')]")
-        self.PRODUCT_CARD_BY_NAME = lambda name: (
+    # Products
+    PRODUCT_CARD = (By.XPATH, "//div[contains(@class,'product-card')]")
+
+    def PRODUCT_CARD_BY_NAME(self, name: str):
+        return (
             By.XPATH,
-            f"//p[@class='lead' and text()='{name}']/ancestor::div[contains(@class,'product-card')]"
+            f"//p[@class='lead' and normalize-space()='{name}']"
+            f"/ancestor::div[contains(@class,'product-card')]"
         )
-        self.QUANTITY_INPUT = (By.XPATH, ".//input[@type='number']")
-        self.ADD_TO_CARD_BUTTON = (By.XPATH, ".//button[contains(@class,'btn-cart')]")
-        self.NEXT_PAGE_BUTTON = (By.XPATH, "//button[contains(@class,'pagination-link') and text()='Next']")
 
-    # Navigationsmethoden
-    def navigate_to_shop(self):
-        """Navigiert direkt zur Shop-Seite per URL"""
-        self.driver.get(SHOP_URL)
-        WebDriverWait(self.driver, DEFAULT_WAIT_TIME).until(
-            EC.presence_of_element_located(self.PRODUCT_CARD_GENERAL)
-        )
+    # Product actions
+    QUANTITY_INPUT = (By.XPATH, ".//input[@type='number']")
+    ADD_TO_CART_BUTTON = (By.XPATH, ".//button[contains(@class,'btn-cart')]")
+
+    # Pagination
+    NEXT_PAGE_BUTTON = (
+        By.XPATH,
+        "//button[contains(@class,'pagination-link') and normalize-space()='Next']"
+    )
+
+
+    # Navigation
+    def open_shop(self):
+        """Open shop via URL"""
+        self.open(SHOP_URL)
+        self.wait.until(EC.presence_of_element_located(self.PRODUCT_CARD))
 
     def click_shop_button(self):
-        """Klickt den 'Shop'-Link an"""
-        shop_btn = WebDriverWait(self.driver, DEFAULT_WAIT_TIME).until(
-            EC.element_to_be_clickable(self.SHOP_BUTTON)
-        )
-        shop_btn.click()
-        # Warte auf die Zielseite
-        WebDriverWait(self.driver, DEFAULT_WAIT_TIME).until(
-            EC.presence_of_element_located(self.PRODUCT_CARD_GENERAL)
-        )
+        """Navigate to shop via header button"""
+        self.click(self.SHOP_BUTTON)
+        self.wait.until(EC.presence_of_element_located(self.PRODUCT_CARD))
 
-    # Produktinteraktion
-    def find_product_card(self, product_name: str, timeout: int = DEFAULT_WAIT_TIME ) -> WebElement | None:
-        """Findet ein Produkt auf allen Shop-Seiten"""
-        wait = WebDriverWait(self.driver, timeout)
-        while True:
+    def filter_alcohol(self):
+        """Click the alcohol filter"""
+        self.click(self.ALCOHOL_FILTER)
+        self.wait.until(EC.presence_of_element_located(self.UNDERAGE_NOTICE))
+
+
+    # Product search
+    def find_product_card(self, product_name: str, max_pages: int = 10) -> WebElement | None:
+        """
+        Searches for a product across paginated shop pages.
+        Returns the product card WebElement or None if not found.
+        """
+
+        for _ in range(max_pages):
             cards = self.driver.find_elements(*self.PRODUCT_CARD_BY_NAME(product_name))
             if cards:
-                return cards[0] # Gibt Webelement zurück
+                return cards[0]
 
-            next_buttons = self.driver.find_elements(*self.NEXT_PAGE_BUTTON)
+            if not self.has_next_page():
+                break
 
-            # WICHTIG: Wenn das Produkt nicht gefunden wird, muss der Test fehlschlagen.
-            # Wir werfen eine Exception, anstatt None zurückzugeben.
-            if not next_buttons or "disabled" in next_buttons[0].get_attribute("class"):
-                raise Exception(f"Product '{product_name}' not found after searching all pages.")
+            self.go_to_next_page()
 
-            next_buttons[0].click()
-            wait.until(EC.presence_of_element_located(self.PRODUCT_CARD_GENERAL))
-            time.sleep(0.3)
+        return None
 
+    def is_product_visible(self, product_name: str) -> bool:
+        """
+        Checks if a product is visible on the current page only
+        (no pagination).
+        """
+        cards = self.driver.find_elements(*self.PRODUCT_CARD_BY_NAME(product_name))
+        return len(cards) > 0
+
+
+    # Product actions
     def add_product_to_cart(self, product_name: str, quantity: int):
-        """Sucht das Produkt, setzt die Menge und fügt es dem Wahrenkorb hinzu"""
-        # find_product_card wirft Exception, wenn nicht gefunden
-        product_card = self.find_product_card(product_name)
+        """Add product to cart with given quantity"""
 
-        # Logik für die Interaktion mit der gefundenen Produktkarte
+        product_card = self.find_product_card(product_name)
+        assert product_card, f"Product '{product_name}' not found in shop"
+
         quantity_input = product_card.find_element(*self.QUANTITY_INPUT)
-        add_btn = product_card.find_element(*self.ADD_TO_CARD_BUTTON)
+        add_button = product_card.find_element(*self.ADD_TO_CART_BUTTON)
 
         quantity_input.clear()
-        time.sleep(0.2)
-        for digit in str(quantity):
-            quantity_input.send_keys(digit)
-            time.sleep(0.1)
+        quantity_input.send_keys(str(quantity))
+        add_button.click()
 
-        add_btn.click()
-        time.sleep(1)
 
-        current_quantity = int(quantity_input.get_attribute("value"))
-        if current_quantity != quantity:
-            quantity_input.clear()
-            for digit in str(quantity):
-                quantity_input.send_keys(digit)
-                time.sleep(0.1)
-            add_btn.click()
-            time.sleep(1)
+    # Pagination helpers
+    def has_next_page(self) -> bool:
+        buttons = self.driver.find_elements(*self.NEXT_PAGE_BUTTON)
+        return bool(buttons) and "disabled" not in buttons[0].get_attribute("class")
+
+    def go_to_next_page(self):
+        self.click(self.NEXT_PAGE_BUTTON)
+        self.wait.until(EC.presence_of_element_located(self.PRODUCT_CARD))
+
+
+    # Compliance / Security
+    def is_underage_notice_visible(self) -> bool:
+        """Check if underage notice is displayed"""
+        elements = self.driver.find_elements(*self.UNDERAGE_NOTICE)
+        return bool(elements) and elements[0].is_displayed()

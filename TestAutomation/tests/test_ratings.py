@@ -1,12 +1,18 @@
 import pytest
 from TestAutomation.pages.product_page import ProductPage
-from TestAutomation.utils.constants import (PRODUCT_ORANGES_URL, PRODUCT_PEARS_URL, TEST_USER_NAME,
-                                            PRODUCT_CHERRIES_URL, RATING_REQUIRED_ERROR)
+from TestAutomation.utils.constants import (
+    PRODUCT_ORANGES_URL,
+    PRODUCT_PEARS_URL,
+    PRODUCT_CHERRIES_URL,  # Für TC-03
+    TEST_USER_NAME,
+    RATING_REQUIRED_ERROR  # Für TC-03
+)
 from selenium.common.exceptions import TimeoutException
+
 
 # Tests
 def test_5_stars_with_comment(login):
-    """TC-01: 5 Sterne mit Kommentar (Prüft den bekannten Kommentar-Bug)."""
+    """TC-01: 5 Sterne + Kommentar (prüft bekannten Kommentar-Bug)."""
     driver = login
     product_page = ProductPage(driver)
 
@@ -16,20 +22,24 @@ def test_5_stars_with_comment(login):
     # 2. Kommentar & Sterne
     comment = "Tolles Produkt!"
     try:
-        # Versucht, das Produkt zu bewerten
         product_page.rate_product(stars=5, comment=comment)
     except TimeoutException:
-        # Tritt ein, wenn das Produkt nicht bewertbar ist z.b noch nicht gekauft
-        pytest.skip("Bewertungsformular nicht sichtbar. Produkt vermutlich nicht gekauft.")
+        pytest.skip("Bewertungsformular nicht sichtbar – Produkt vermutlich nicht gekauft.")
 
-    # 3. Assertion: Testet den BUG
-    # Die Methode is_comment_visible übernimmt die komplette Logik von verify_comment.
-    assert product_page.is_comment_visible(author=TEST_USER_NAME, comment_text=comment) == False,\
-        "Der Kommentar wurde unerwartet angezeigt. TC-01 ist unerwartet PASSED."
+    # 3. Assertion – der BUG: Kommentar sollte NICHT sichtbar sein
+    visible = product_page.is_comment_visible(
+        author=TEST_USER_NAME,
+        comment_text=comment
+    )
+
+    assert visible is False, (
+        f"Kommentar ist sichtbar, obwohl er laut Bug nicht gespeichert werden sollte. "
+        f"Gefundener Kommentar: {comment}"
+    )
 
 
 def test_4_stars_without_comment(login):
-    """TC-02: 4 Sterne ohne Kommentar"""
+    """TC-02: 4 Sterne ohne Kommentar."""
     driver = login
     product_page = ProductPage(driver)
 
@@ -40,7 +50,6 @@ def test_4_stars_without_comment(login):
     try:
         product_page.rate_product(stars=4)
     except TimeoutException:
-        # Tritt ein, wenn das Produkt nicht bewertbar ist z.b noch nicht gekauft
         pytest.skip("Bewertungsformular nicht sichtbar. Produkt vermutlich nicht gekauft.")
 
     assert product_page.get_displayed_rating() == 4, "Sterne-Anzeige falsch nach 4-Sterne-Bewertung."
@@ -54,16 +63,15 @@ def test_no_stars_with_comment(login):
     # 1. Navigation
     product_page.navigate_to(PRODUCT_CHERRIES_URL)
 
-    # 2. Kommentar & Sterne
+    # 2. Kommentar & Sterne (0 Sterne sind der Kern dieses Negativtests)
     comment = "Gut"
     try:
-        # Versucht, das Produkt zu bewerten
-        # WICHTIG! mit 0 Sternen
+        # Die Methode rate_product MUSS den Text der Fehlermeldung zurückgeben.
         error_message = product_page.rate_product(stars=0, comment=comment)
     except TimeoutException:
-        # Tritt ein, wenn das Produkt nicht bewertbar ist z.b noch nicht gekauft
         pytest.skip("Bewertungsformular nicht sichtbar. Produkt vermutlich nicht gekauft.")
 
-    # 3. Assertion: Überprüft die Konstante
+    # 3. Assertion: Überprüft, ob die zurückgegebene Meldung der erwarteten Konstante entspricht.
     assert error_message == RATING_REQUIRED_ERROR, \
-        f"Unerwartete Fehlermeldung angezeigt. Erwartet: '{RATING_REQUIRED_ERROR}'"
+        (f"Unerwartete Fehlermeldung angezeigt."
+         f"Erwartet: '{RATING_REQUIRED_ERROR}', Erhalten: '{error_message}'")

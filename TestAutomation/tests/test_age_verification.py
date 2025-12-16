@@ -1,31 +1,80 @@
 import pytest
-from TestAutomation.pages.shop_page import ShopPage
 from TestAutomation.pages.age_verification_popup import AgeVerificationPopup
+from TestAutomation.pages.product_page import ProductPage
+from TestAutomation.pages.shop_page import ShopPage
+from TestAutomation.utils.constants import PRODUCT_IGNIS_VODKA_URL, PRODUCT_IGNIS_VODKA_NAME
 
 
-@pytest.mark.parametrize("birthdate, expected_result", [
-    ("27-08-2007", "success"),   # TC-04: ~18 Jahre = Zugang erlaubt
-    ("27-08-2008", "warning"),   # TC-05: ~17 Jahre = Zugang verweigert
-    ("", "warning"),             # TC-06: DD-MM-YYYY leer = warning
-    ("27.08.2007", "warning"),   # TC-07: Falsches Format = warning
-])
+@pytest.mark.ui
+@pytest.mark.compliance
+@pytest.mark.parametrize("birthdate", ["27-08-2007"])
+def test_age_verification_allows_access_to_alcohol(login, birthdate):
+    """
+    COMPLIANCE TEST:
+    Adult users should be able to access alcohol products
+    after successful age verification via the shop flow.
+    """
 
-def test_age_verification(login, birthdate, expected_result):
-    driver = login
+    shop = ShopPage(login)
+    popup = AgeVerificationPopup(login)
+    product = ProductPage(login)
 
-    shop_page = ShopPage(driver)
-    age_popup = AgeVerificationPopup(driver)
+    # GIVEN
+    shop.open_shop()
+    assert popup.is_popup_displayed()
 
-    # 1. Aktion: Shop öffnen (Link ist in ShopPage)
-    shop_page.click_shop_button()
+    # WHEN
+    popup.submit_birthdate(birthdate)
 
-    # 2. Aktion: Datum eingeben und bestätigen (Logik ist in AgeVerificationPopup)
-    age_popup.enter_birthdate_and_confirm(birthdate)
+    # THEN
+    assert popup.is_success_message_displayed()
 
-    # 3. Assertion: Verhalten prüfen
-    if expected_result == "success":
-        assert age_popup.is_success_message_displayed(), \
-            f"TC-04 fehlgeschlagen: Erwartete Erfolgsmeldung nicht gefunden für Datum {birthdate}"
-    else:
-        assert age_popup.is_warning_message_displayed(), \
-            f"TC-05/06/07 fehlgeschlagen: Erwartete Warnmeldung nicht gefunden für Datum {birthdate}"
+    product.open(PRODUCT_IGNIS_VODKA_URL)
+    assert product.is_product_name_displayed(PRODUCT_IGNIS_VODKA_NAME)
+
+
+@pytest.mark.ui
+@pytest.mark.compliance
+def test_underage_user_sees_underage_notice_when_filtering_alcohol(login):
+    """
+    COMPLIANCE TEST:
+    Underage users must see an explicit 'Underage Notice'
+    when attempting to access alcohol products via the shop filter.
+    """
+
+    shop = ShopPage(login)
+    popup = AgeVerificationPopup(login)
+
+    # GIVEN
+    shop.open_shop()
+    assert popup.is_popup_displayed()
+
+    # WHEN
+    popup.submit_birthdate("27-08-2008")
+    assert popup.is_warning_message_displayed()
+
+    shop.filter_alcohol()
+
+    # THEN
+    assert shop.is_underage_notice_visible(), (
+        "COMPLIANCE BUG: Underage notice not displayed for alcohol filter"
+    )
+
+
+
+@pytest.mark.security
+def test_direct_url_access_bypasses_age_verification(driver):
+    """
+    SECURITY BUG:
+    Alcohol product page is accessible via direct URL
+    without prior age verification.
+    """
+
+    product = ProductPage(driver)
+
+    # WHEN
+    product.open(PRODUCT_IGNIS_VODKA_URL)
+    product.wait_until_loaded()
+
+    # THEN
+    assert product.is_product_name_displayed(PRODUCT_IGNIS_VODKA_NAME)

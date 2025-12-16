@@ -17,7 +17,7 @@ from TestAutomation.utils.constants import (
 
 def clean_currency(currency_string: str) -> float:
     """Extrahiert den Preis als Float aus einem String wie '95.00€'"""
-    cleaned_string = re.sub(r'[€]', '', currency_string)
+    cleaned_string = re.sub(r'€', '', currency_string)
     cleaned_string = cleaned_string.replace(',', '.').strip()
     return float(cleaned_string)
 
@@ -31,9 +31,9 @@ def setup_cart_environment(login):
     checkout_page = CheckoutPage(driver)
     age_popup = AgeVerificationPopup(driver)
 
-    age_popup.confirm_age()
     checkout_page.clear_cart_if_not_empty()
     shop_page.navigate_to_shop()
+    age_popup.confirm_age()
 
     return driver, shop_page, checkout_page
 
