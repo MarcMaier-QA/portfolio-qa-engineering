@@ -130,7 +130,6 @@ def test_tc10_shipping_update_on_removal(setup_cart_environment):
     )
 
     # 4. Produkt entfernen (Warenwert fällt auf 17.50 €)
-    # 💥 HIER wird eine Methode in deiner CheckoutPage benötigt, um das Produkt zu entfernen.
     checkout_page.remove_product_from_cart(product_name=PRODUCT_APPLES)
 
     # 5. Erneute Assertion: ERWARTET 5.00 € Versandkosten (BUG-Check)
