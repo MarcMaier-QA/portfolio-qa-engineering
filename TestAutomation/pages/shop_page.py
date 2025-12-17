@@ -15,6 +15,7 @@ class ShopPage(BasePage):
     PRODUCT_CARD = (By.XPATH, "//div[contains(@class,'product-card')]")
 
     def PRODUCT_CARD_BY_NAME(self, name: str):
+        """Dynamischer Locator für eine spezifische Produktkarte"""
         return (
             By.XPATH,
             f"//p[@class='lead' and normalize-space()='{name}']"
@@ -31,79 +32,111 @@ class ShopPage(BasePage):
         "//button[contains(@class,'pagination-link') and normalize-space()='Next']"
     )
 
-
     # Navigation
-    def open_shop(self):
-        """Open shop via URL"""
+    def navigate_to_shop(self):
+        """Öffnet den Shop ohne auf Produkte zu warten (da Popup zuerst kommt)"""
         self.open(SHOP_URL)
-        self.wait.until(EC.presence_of_element_located(self.PRODUCT_CARD))
 
     def click_shop_button(self):
-        """Navigate to shop via header button"""
+        """Navigiert zum Shop über den Header-Button"""
         self.click(self.SHOP_BUTTON)
         self.wait.until(EC.presence_of_element_located(self.PRODUCT_CARD))
 
     def filter_alcohol(self):
-        """Click the alcohol filter"""
+        """Klickt auf den Alkohol-Filter"""
         self.click(self.ALCOHOL_FILTER)
         self.wait.until(EC.presence_of_element_located(self.UNDERAGE_NOTICE))
 
-
-    # Product search
+    # Product search (OHNE while-Schleife!)
     def find_product_card(self, product_name: str, max_pages: int = 10) -> WebElement | None:
         """
-        Searches for a product across paginated shop pages.
-        Returns the product card WebElement or None if not found.
+        Sucht ein Produkt über mehrere Seiten hinweg.
+        Nutzt rekursive Logik statt while-Schleife.
+
+        Args:
+            product_name: Name des Produkts
+            max_pages: Maximale Anzahl an Seiten die durchsucht werden
+
+        Returns:
+            WebElement der Produktkarte oder None
         """
+        return self._find_product_recursive(product_name, pages_searched=0, max_pages=max_pages)
 
-        for _ in range(max_pages):
-            cards = self.driver.find_elements(*self.PRODUCT_CARD_BY_NAME(product_name))
-            if cards:
-                return cards[0]
+    def _find_product_recursive(self, product_name: str, pages_searched: int, max_pages: int) -> WebElement | None:
+        """
+        Hilfsmethode: Rekursive Produktsuche über Seiten.
+        """
+        # Abbruchbedingung 1: Max Seiten erreicht
+        if pages_searched >= max_pages:
+            return None
 
-            if not self.has_next_page():
-                break
+        # Suche auf aktueller Seite
+        cards = self.find_elements_no_wait(self.PRODUCT_CARD_BY_NAME(product_name))
+        if cards:
+            return cards[0]
 
-            self.go_to_next_page()
+        # Abbruchbedingung 2: Keine nächste Seite verfügbar
+        if not self.has_next_page():
+            return None
 
-        return None
+        # Gehe zur nächsten Seite
+        self.go_to_next_page()
+
+        # Rekursiver Aufruf für nächste Seite
+        return self._find_product_recursive(product_name, pages_searched + 1, max_pages)
 
     def is_product_visible(self, product_name: str) -> bool:
         """
-        Checks if a product is visible on the current page only
-        (no pagination).
+        Prüft, ob ein Produkt auf der AKTUELLEN Seite sichtbar ist.
+        Keine Pagination!
         """
-        cards = self.driver.find_elements(*self.PRODUCT_CARD_BY_NAME(product_name))
+        cards = self.find_elements_no_wait(self.PRODUCT_CARD_BY_NAME(product_name))
         return len(cards) > 0
-
 
     # Product actions
     def add_product_to_cart(self, product_name: str, quantity: int):
-        """Add product to cart with given quantity"""
-
+        """
+        Fügt ein Produkt mit bestimmter Menge zum Warenkorb hinzu.
+        Sucht das Produkt automatisch über alle Seiten.
+        """
+        # 1. Finde die Produktkarte
         product_card = self.find_product_card(product_name)
-        assert product_card, f"Product '{product_name}' not found in shop"
 
+        # 2. Assertion: Produkt muss gefunden werden
+        assert product_card is not None, f"Produkt '{product_name}' wurde nicht im Shop gefunden"
+
+        # 3. Finde Input und Button innerhalb der Produktkarte
         quantity_input = product_card.find_element(*self.QUANTITY_INPUT)
         add_button = product_card.find_element(*self.ADD_TO_CART_BUTTON)
 
+        # 4. Setze Menge und klicke
         quantity_input.clear()
         quantity_input.send_keys(str(quantity))
         add_button.click()
 
-
     # Pagination helpers
     def has_next_page(self) -> bool:
-        buttons = self.driver.find_elements(*self.NEXT_PAGE_BUTTON)
-        return bool(buttons) and "disabled" not in buttons[0].get_attribute("class")
+        """
+        Prüft, ob eine nächste Seite verfügbar ist.
+        Nutzt find_elements, um Exception zu vermeiden.
+        """
+        buttons = self.find_elements_no_wait(self.NEXT_PAGE_BUTTON)
+        if not buttons:
+            return False
+
+        # Prüfe ob Button disabled ist
+        button_classes = buttons[0].get_attribute("class")
+        return "disabled" not in button_classes
 
     def go_to_next_page(self):
+        """Navigiert zur nächsten Seite und wartet auf Produktkarten"""
         self.click(self.NEXT_PAGE_BUTTON)
         self.wait.until(EC.presence_of_element_located(self.PRODUCT_CARD))
 
-
     # Compliance / Security
     def is_underage_notice_visible(self) -> bool:
-        """Check if underage notice is displayed"""
-        elements = self.driver.find_elements(*self.UNDERAGE_NOTICE)
-        return bool(elements) and elements[0].is_displayed()
+        """Prüft, ob die Minderjährigen-Warnung angezeigt wird"""
+        elements = self.find_elements_no_wait(self.UNDERAGE_NOTICE)
+        if not elements:
+            return False
+        return elements[0].is_displayed()
