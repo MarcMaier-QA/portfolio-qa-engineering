@@ -26,7 +26,7 @@ class CheckoutPage(BasePage):
             f"[.//h5[contains(normalize-space(.), '{product_name}')]]"
             f"//a[@class='remove-icon']"
         )
-        return (By.XPATH, xpath)
+        return (By.XPATH, xpath) # Gibt einen tuple zurück aus Suchstrategie und Selektor
 
     # Navigation
     def navigate_to_checkout(self):
@@ -34,9 +34,6 @@ class CheckoutPage(BasePage):
         self.open(CHECKOUT_URL)
         # Warte bis die URL stimmt, das ist am sichersten gegen Timeouts
         self.wait.until(EC.url_contains("checkout"))
-
-    # Warenkorb leeren
-    import time  # Falls noch nicht importiert
 
     def clear_cart_if_not_empty(self):
         """Löscht Produkte mit festen Pausen für maximale Stabilität."""
