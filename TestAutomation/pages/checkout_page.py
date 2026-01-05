@@ -36,26 +36,20 @@ class CheckoutPage(BasePage):
         self.wait.until(EC.url_contains("checkout"))
 
     def clear_cart_if_not_empty(self):
-        """Löscht Produkte mit festen Pausen für maximale Stabilität."""
+        """Löscht alle Produkte aus dem Warenkorb."""
         self.navigate_to_checkout()
 
-        # 1. Warten, bis die Seite wirklich fertig geladen ist
-        time.sleep(1.0)
+        buttons = self.find_elements_no_wait(self.REMOVE_BUTTON)
 
-        # 2. Wir nutzen eine großzügige Range
-        for n in range(15):
-            buttons = self.find_elements_no_wait(self.REMOVE_BUTTON)
+        for button in buttons:
+            # Klick ausführen
+            self.driver.execute_script(
+                "arguments[0].click();", button
+            )
 
-            if len(buttons) > 0:
-                target_button = buttons[0]
-                # Klick ausführen
-                self.driver.execute_script("arguments[0].click();", target_button)
+            # Warten, bis GENAU dieser Button aus dem DOM verschwunden ist
+            self.wait.until(EC.staleness_of(button))
 
-                # 3. Kurze Pause, damit das DOM sich nach dem Löschen regeneriert
-                time.sleep(0.5)
-            else:
-                # Wenn keine Buttons mehr da sind, können wir die Schleife abbrechen
-                break
 
     def _remove_all_items_recursive(self):
         # Nutze find_elements_no_wait um sofort eine Liste zu bekommen
