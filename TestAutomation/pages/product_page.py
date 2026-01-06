@@ -137,3 +137,12 @@ class ProductPage(BasePage):
             return self.get_rating_error_text()
 
         return ""
+
+    def can_rate_product(self) -> bool:
+        """
+        Ein Produkt kann bewertet werden, wenn das Kommentar-Textfeld sichtbar ist.
+        """
+        elements = self.find_elements_no_wait(self.COMMENT_TEXTAREA)
+        if not elements:
+            return False
+        return elements[0].is_displayed()
