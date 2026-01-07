@@ -77,6 +77,10 @@ class ProductPage(BasePage):
     def get_displayed_rating(self) -> int:
         """Gibt die angezeigte Sternebewertung als Integer zurück"""
         text = self.get_text(self.DISPLAYED_RATING)
+
+        # Klammern entfernen, falls vorhanden
+        text = text.replace("(", "").replace(")", "")
+
         return int(text) if text.isdigit() else 0
 
     def is_comment_visible(self, author: str, comment_text: str) -> bool:
