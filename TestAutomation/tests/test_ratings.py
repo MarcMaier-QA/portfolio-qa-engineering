@@ -1,5 +1,6 @@
 import pytest
 from TestAutomation.pages.product_page import ProductPage
+from selenium.webdriver.support import expected_conditions as EC
 from TestAutomation.utils.constants import (
     PRODUCT_ORANGES_URL,
     PRODUCT_PEARS_URL,
@@ -25,7 +26,7 @@ def test_5_stars_with_comment(login):
         pytest.skip("Bewertungsformular nicht sichtbar – Produkt nicht gekauft.")
 
     # 2. Kommentar & Sterne
-    product_page.rate_procut(stars=number_of_stars, comment=comment)
+    product_page.rate_product(stars=number_of_stars, comment=comment)
 
     # 3. Assertion – der BUG: Kommentar sollte NICHT sichtbar sein
     visible = product_page.is_comment_visible(
@@ -53,6 +54,11 @@ def test_4_stars_without_comment(login):
     # 2. Aktion: Nur Sterne setzen
     product_page.rate_product(stars=number_of_stars)
 
+    product_page.navigate_to(PRODUCT_PEARS_URL)
+    # 3. Warte, bis die UI mit "(4)" aktualisiert wurde
+    product_page.wait.until(
+        EC.text_to_be_present_in_element(product_page.DISPLAYED_RATING, "4")
+    )
     assert product_page.get_displayed_rating() == 4, "Sterne-Anzeige falsch nach 4-Sterne-Bewertung."
 
 
