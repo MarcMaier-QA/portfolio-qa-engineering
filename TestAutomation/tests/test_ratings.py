@@ -8,8 +8,8 @@ from TestAutomation.utils.constants import (
     TEST_USER_NAME,
     RATING_REQUIRED_ERROR  # Für TC-03
 )
-from selenium.common.exceptions import TimeoutException
-
+# todo: funktion zum löschen der kommentare/bewertung
+# todo: page objekt chaining
 
 # Tests
 def test_5_stars_with_comment(login):
@@ -22,6 +22,7 @@ def test_5_stars_with_comment(login):
     # 1. Navigation
     product_page.navigate_to(PRODUCT_ORANGES_URL)
 
+    # todo: pytest.skip nur wenn ich den test wirklich überspringen will
     if not product_page.can_rate_product():
         pytest.skip("Bewertungsformular nicht sichtbar – Produkt nicht gekauft.")
 
@@ -55,11 +56,14 @@ def test_4_stars_without_comment(login):
     product_page.rate_product(stars=number_of_stars)
 
     product_page.navigate_to(PRODUCT_PEARS_URL)
+
     # 3. Warte, bis die UI mit "(4)" aktualisiert wurde
     product_page.wait.until(
-        EC.text_to_be_present_in_element(product_page.DISPLAYED_RATING, "4")
+        EC.text_to_be_present_in_element(product_page.DISPLAYED_RATING, "4") #
     )
     assert product_page.get_displayed_rating() == 4, "Sterne-Anzeige falsch nach 4-Sterne-Bewertung."
+
+    product_page.delete_my_review()
 
 
 def test_no_stars_with_comment(login):
