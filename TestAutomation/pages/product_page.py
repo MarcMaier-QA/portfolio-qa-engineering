@@ -32,6 +32,13 @@ class ProductPage(BasePage):
         f"//div[contains(@class,'review')]//p[contains(text(),'{text}')]"
     )
 
+    # Review / Delete Locators
+    ADD_COMMENT_HEADER = (By.XPATH, "//h5[contains(text(),'Add a comment')]")
+    REVIEW_CONTAINER = (By.CSS_SELECTOR, ".comment")
+    REVIEW_MENU_BUTTON = (By.CSS_SELECTOR, ".comment .menu-icon")
+    DROPDOWN_MENU = (By.CSS_SELECTOR, ".dropdown-menu")
+    DELETE_BUTTON = (By.XPATH,"//div[contains(@class, 'dropdown-menu')]//button[normalize-space()='Delete']")
+
     # Navigation
     def navigate_to(self, url: str):
         """Navigiert zu einer Produktseite"""
@@ -150,3 +157,26 @@ class ProductPage(BasePage):
         if not elements:
             return False
         return elements[0].is_displayed()
+
+    def delete_my_review(self):
+        """Löscht die eigene Bewertung, falls vorhanden."""
+        # Wenn kein Review vorhanden → direkt zurück
+        if not self.find_elements_no_wait(self.REVIEW_MENU_BUTTON):
+            return self
+
+        # Menü öffnen
+        self.get_element(self.REVIEW_MENU_BUTTON).click()
+
+        # Warten bis Dropdown sichtbar ist
+        self.wait.until(EC.visibility_of_element_located(self.DROPDOWN_MENU))
+
+        # Delete drücken
+        self.get_element(self.DELETE_BUTTON).click()
+
+        # Bestätigungspopup akzeptieren
+        self.driver.switch_to.alert.accept()
+
+        # Warten bis Kommentar komplett weg ist
+        self.wait.until(EC.visibility_of_element_located(self.ADD_COMMENT_HEADER))
+
+        return self
