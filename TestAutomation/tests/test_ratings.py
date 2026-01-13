@@ -22,22 +22,20 @@ def test_5_stars_with_comment(login):
     # 1. Navigation
     product_page.navigate_to(PRODUCT_ORANGES_URL)
 
-    # todo: pytest.skip nur wenn ich den test wirklich überspringen will
-    if not product_page.can_rate_product():
-        pytest.skip("Bewertungsformular nicht sichtbar – Produkt nicht gekauft.")
+    # Formular muss sichtbar sein für eine bewertung
+    assert product_page.can_rate_product(), "Bewertungsformular fehlt."
 
     # 2. Kommentar & Sterne
     product_page.rate_product(stars=number_of_stars, comment=comment)
 
-    # 3. Assertion – der BUG: Kommentar sollte NICHT sichtbar sein
-    visible = product_page.is_comment_visible(
-        author=TEST_USER_NAME,
-        comment_text=comment
-    )
+    # 3. Reload für die sichtbarkeit
+    product_page.navigate_to(PRODUCT_ORANGES_URL)
 
-    assert visible is False, (
-        f"Kommentar ist sichtbar, obwohl er laut Bug nicht gespeichert werden sollte. "
-    )
+    assert product_page.is_comment_visible(TEST_USER_NAME, comment), "Kommentar fehlt nach Bewertung."
+    assert product_page.get_displayed_rating() == number_of_stars, "Sterne-Anzeige falsch nach 5-Sterne-Bewertung."
+
+    # Bewertung löschen
+    product_page.delete_my_review()
 
 
 def test_4_stars_without_comment(login):
@@ -63,6 +61,7 @@ def test_4_stars_without_comment(login):
     )
     assert product_page.get_displayed_rating() == 4, "Sterne-Anzeige falsch nach 4-Sterne-Bewertung."
 
+    # Bewertung löschen
     product_page.delete_my_review()
 
 
