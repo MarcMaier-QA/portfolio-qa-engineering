@@ -8,7 +8,6 @@ from TestAutomation.utils.constants import (
     TEST_USER_NAME,
     RATING_REQUIRED_ERROR  # Für TC-03
 )
-# todo: funktion zum löschen der kommentare/bewertung
 # todo: page objekt chaining
 
 # Tests
@@ -75,13 +74,10 @@ def test_no_stars_with_comment(login):
     # 1. Navigation
     product_page.navigate_to(PRODUCT_CHERRIES_URL)
 
-    if not product_page.can_rate_product():
-        pytest.skip("Bewertungsformular nicht sichtbar – Produkt nicht gekauft.")
-
     # 2. Kommentar & Sterne (0 Sterne sind der Kern dieses Negativtests)
     error_message = product_page.rate_product(
         stars=number_of_stars,
         comment=comment
     )
 
-    assert error_message == RATING_REQUIRED_ERROR
+    assert error_message == RATING_REQUIRED_ERROR, f"Falsche Fehlermeldung: {error_message}"

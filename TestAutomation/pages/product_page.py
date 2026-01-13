@@ -144,6 +144,13 @@ class ProductPage(BasePage):
         self.submit_rating()
 
         # 4. Prüfe auf Fehlermeldung
+        if stars == 0:
+            # Warte explizit auf die Fehlermeldung
+            self.wait.until(
+                EC.visibility_of_element_located(self.RATING_ERROR)
+            )
+            return self.get_rating_error_text()
+
         if self.is_rating_error_visible():
             return self.get_rating_error_text()
 
