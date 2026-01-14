@@ -112,14 +112,17 @@ class ProductPage(BasePage):
         """Klickt auf einen bestimmten Stern (1-5)"""
         if stars > 0:
             self.click(self.RATING_STAR(stars))
+        return self
 
     def enter_comment(self, comment: str):
         """Gibt einen Kommentar ein"""
         self.type(self.COMMENT_TEXTAREA, comment)
+        return self
 
     def submit_rating(self):
         """Sendet die Bewertung ab"""
         self.click(self.SEND_BUTTON)
+        return self
 
     def rate_product(self, stars: int = 0, comment: str = "") -> str:
         """
@@ -154,7 +157,7 @@ class ProductPage(BasePage):
         if self.is_rating_error_visible():
             return self.get_rating_error_text()
 
-        return ""
+        return self
 
     def can_rate_product(self) -> bool:
         """
@@ -167,7 +170,7 @@ class ProductPage(BasePage):
 
     def delete_my_review(self):
         """Löscht die eigene Bewertung, falls vorhanden."""
-        # Wenn kein Review vorhanden → direkt zurück
+        # Wenn kein Review vorhanden -> direkt zurück
         if not self.find_elements_no_wait(self.REVIEW_MENU_BUTTON):
             return self
 
