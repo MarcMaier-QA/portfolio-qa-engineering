@@ -1,4 +1,3 @@
-import time
 import re
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -8,13 +7,15 @@ from TestAutomation.utils.constants import CHECKOUT_URL
 
 class CheckoutPage(BasePage):
     # Locators
-    REMOVE_BUTTON = (By.CSS_SELECTOR, ".checkout-card-image-container a.remove-icon")
+    REMOVE_ICON = (By.CSS_SELECTOR, "a.remove-icon")
     # Die Preise
     PRODUCT_TOTAL = (By.XPATH, "//div[@class='product-total-container']//h5[2]")
     SHIPPING_COST = (By.XPATH, "//div[@class='shipment-container']//h5[2]")
     TOTAL_COST = (By.XPATH, "//div[@class='total-container']//h5[2]")
     # Die Leermeldung
-    EMPTY_CART_MESSAGE = (By.XPATH, "//h2[contains(text(), 'Your cart is empty')]")
+    EMPTY_CART_MESSAGE = (By.XPATH, "//h2[normalize-space()='Your cart is empty']")
+    # Der Checkoutknopf
+    CHECKOUT_BUTTON = (By.CSS_SELECTOR, ".headerIcon:nth-of-type(3)")
 
     def PRODUCT_REMOVE_BUTTON(self, product_name: str):
         """
@@ -28,6 +29,14 @@ class CheckoutPage(BasePage):
         )
         return (By.XPATH, xpath) # Gibt einen tuple zurück aus Suchstrategie und Selektor
 
+    def remove_button_for_product(self, product_name: str):
+        return (
+            By.XPATH,
+            f"//h5[text()='{product_name}']"
+            "/ancestor::div[contains(@class,'checkout-card-item-container')]"
+            "//a[contains(@class,'remove-icon')]"
+        )
+
     # Navigation
     def navigate_to_checkout(self):
         """Navigiert zum Checkout und wartet nur auf die URL."""
@@ -36,45 +45,31 @@ class CheckoutPage(BasePage):
         self.wait.until(EC.url_contains("checkout"))
 
     def clear_cart_if_not_empty(self):
-        """Löscht alle Produkte aus dem Warenkorb."""
-        self.navigate_to_checkout()
+        """Entfernt zuverlässig alle Produkte aus dem Warenkorb."""
+        self.goto_checkout()
 
-        buttons = self.find_elements_no_wait(self.REMOVE_BUTTON)
+        remove_buttons = self.find_elements_no_wait(self.REMOVE_ICON)
 
-        for button in buttons:
-            # Klick ausführen
-            self.driver.execute_script(
-                "arguments[0].click();", button
-            )
-
-            # Warten, bis GENAU dieser Button aus dem DOM verschwunden ist
+        while remove_buttons:
+            button = remove_buttons[0]
+            button.click()
             self.wait.until(EC.staleness_of(button))
+            remove_buttons = self.find_elements_no_wait(self.REMOVE_ICON)
 
+        # Absicherung: leerer Warenkorb sichtbar
+        self.wait.until(
+            EC.presence_of_element_located(self.EMPTY_CART_MESSAGE),
+            message="Warenkorb ist nach dem Leeren nicht leer"
+        )
 
-    def _remove_all_items_recursive(self):
-        # Nutze find_elements_no_wait um sofort eine Liste zu bekommen
-        remove_buttons = self.find_elements_no_wait(self.REMOVE_BUTTON)
+        return self
 
-        if not remove_buttons:
-            return  # Warenkorb ist leer, fertig!
-
-        # Klicke und warte bis das Element weg ist
-        button = remove_buttons[0]
-        self.driver.execute_script("arguments[0].click();", button)
-
-        # Warte bis der Button aus dem DOM verschwindet
-        self.wait.until(EC.staleness_of(button))
-
-        # Nächster Durchgang
-        self._remove_all_items_recursive()
-
-    # Produkt entfernen
     def remove_product_from_cart(self, product_name: str):
         """Entfernt ein spezifisches Produkt aus dem Warenkorb."""
         # 1. Den Locator generieren
         remove_locator = self.PRODUCT_REMOVE_BUTTON(product_name)
 
-        # 2.Das gibt dem Warenkorb die nötige Zeit, um die Äpfel anzuzeigen
+        # 2. Das gibt dem Warenkorb die nötige Zeit, um die Äpfel anzuzeigen
         button_element = self.wait.until(
             EC.element_to_be_clickable(remove_locator),
             message=f"Konnte Lösch-Button für '{product_name}' nicht finden. Name prüfen!"
@@ -85,6 +80,7 @@ class CheckoutPage(BasePage):
 
         # 4. Warten, bis die Zeile verschwindet (DOM-Update abwarten)
         self.wait.until(EC.staleness_of(button_element))
+        return self
 
     # Get-Methoden für Preise
     def get_shipping_cost(self) -> str:
@@ -130,8 +126,43 @@ class CheckoutPage(BasePage):
 
     # Warenkorb-Status prüfen
     def is_cart_empty(self) -> bool:
-        """Prüft, ob der Warenkorb wirklich leer ist."""
-        # Suche nach dem Total-Preis-Element.
-        # Wenn find_elements eine leere Liste zurückgibt, ist der Korb leer.
-        elements = self.find_elements_no_wait(self.TOTAL_COST)
-        return len(elements) == 0
+        return bool(
+            self.find_elements_no_wait(self.EMPTY_CART_MESSAGE)
+        )
+
+    def goto_checkout(self):
+        """Klickt auf das Einkaufswagen-Symbol und wartet auf Checkout."""
+        self.click(self.CHECKOUT_BUTTON)
+        self.wait.until(EC.url_contains("checkout"))
+        return self
+
+    def verify_shipping_costs(self, expected_shipping: float, expected_subtotal: float):
+        """
+        Zentrale Hilfsfunktion für Versandkosten-Assertions.
+
+        Prüft:
+        1. Zwischensumme (Produktkosten) ist korrekt
+        2. Versandkosten sind korrekt
+        3. Gesamtsumme (Produkte + Versand) ist korrekt
+
+        Args:
+            checkout_page: CheckoutPage Instanz
+            expected_shipping: Erwartete Versandkosten
+            expected_subtotal: Erwartete Produkt-Zwischensumme
+        """
+        self.wait.until(
+            lambda driver: self.get_product_total_as_float() == expected_subtotal,
+            message="Zwischensumme wurde nicht korrekt aktualisiert"
+        )
+
+        actual_subtotal = self.get_product_total_as_float()
+        actual_shipping = self.get_shipping_cost_as_float()
+        actual_total = self.get_total_as_float()
+
+        expected_total = expected_subtotal + expected_shipping
+
+        assert actual_subtotal == expected_subtotal
+        assert actual_shipping == expected_shipping
+        assert actual_total == expected_total
+
+        return self
