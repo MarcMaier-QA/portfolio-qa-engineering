@@ -124,7 +124,7 @@ class ProductPage(BasePage):
         self.click(self.SEND_BUTTON)
         return self
 
-    def rate_product(self, stars: int = 0, comment: str = "") -> str:
+    def rate_product(self, stars: int = 0, comment: str = ""):
         """
         Hauptmethode zum Bewerten eines Produkts.
 
@@ -190,3 +190,21 @@ class ProductPage(BasePage):
         self.wait.until(EC.visibility_of_element_located(self.ADD_COMMENT_HEADER))
 
         return self
+
+# später vielleicht retry logic einbauen.
+    #def retry(self, func, attempts=5, delay=1):
+     #   """
+      #  Führt func() mehrmals aus, solange es fehlschlägt.
+       # Sehr hilfreich für Elemente, die verzögert sichtbar werden.
+        #"""
+
+        #last_exception = None
+        #for _ in range(attempts):
+         #   try:
+          #      return func()
+           # except Exception as e:
+            #    last_exception = e
+             #   time.sleep(delay)
+
+        # Wenn es nach allen Versuchen immer noch nicht gefunden wurde -> Exception werfen
+        #raise last_exception
