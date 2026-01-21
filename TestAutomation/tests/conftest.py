@@ -57,4 +57,4 @@ def login(driver):
     login_page.login(TEST_USER_EMAIL, TEST_USER_PASSWORD)
 
     # Wichtig: Wir geben den bereits eingeloggten driver zurück
-    return driver
+    yield driver
