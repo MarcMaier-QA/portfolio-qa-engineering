@@ -1,3 +1,5 @@
+import time
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
@@ -13,12 +15,13 @@ class ShopPage(BasePage):
 
     # Products
     PRODUCT_CARD = (By.XPATH, "//div[contains(@class,'product-card')]")
+    PRODUCT_TITLE = (By.XPATH, "//p[contains(@class,'lead')]")
 
     def PRODUCT_CARD_BY_NAME(self, name: str):
         """Dynamischer Locator für eine spezifische Produktkarte"""
         return (
             By.XPATH,
-            f"//p[@class='lead' and normalize-space()='{name}']"
+            f"//p[contains(@class,'lead') and contains(normalize-space(), '{name}')]"
             f"/ancestor::div[contains(@class,'product-card')]"
         )
 
@@ -36,6 +39,8 @@ class ShopPage(BasePage):
     def navigate_to_shop(self):
         """Öffnet den Shop ohne auf Produkte zu warten (da Popup zuerst kommt)"""
         self.open(SHOP_URL)
+        self.wait.until(EC.presence_of_element_located(self.PRODUCT_CARD))
+        return self
 
     def click_shop_button(self):
         """Navigiert zum Shop über den Header-Button"""
@@ -60,6 +65,7 @@ class ShopPage(BasePage):
         Returns:
             WebElement der Produktkarte oder None
         """
+        self.wait.until(EC.presence_of_element_located(self.PRODUCT_CARD))
         return self._find_product_recursive(product_name, pages_searched=0, max_pages=max_pages)
 
     def _find_product_recursive(self, product_name: str, pages_searched: int, max_pages: int) -> WebElement | None:
@@ -99,6 +105,12 @@ class ShopPage(BasePage):
         Fügt ein Produkt mit bestimmter Menge zum Warenkorb hinzu.
         Sucht das Produkt automatisch über alle Seiten.
         """
+        # Warten bis Produkte geladen sind
+        self.wait.until(
+            EC.presence_of_element_located(self.PRODUCT_CARD),
+            message="Produktkarten wurden im Shop nicht geladen"
+        )
+
         # 1. Finde die Produktkarte
         product_card = self.find_product_card(product_name)
 
@@ -113,6 +125,8 @@ class ShopPage(BasePage):
         quantity_input.clear()
         quantity_input.send_keys(str(quantity))
         add_button.click()
+
+        return self
 
     # Pagination helpers
     def has_next_page(self) -> bool:
@@ -129,9 +143,22 @@ class ShopPage(BasePage):
         return "disabled" not in button_classes
 
     def go_to_next_page(self):
-        """Navigiert zur nächsten Seite und wartet auf Produktkarten"""
+        """Navigiert zur nächsten Seite und wartet auf echten Seitenwechsel"""
+
+        old_titles = [
+            card.find_element(By.XPATH, ".//p[contains(@class,'lead')]").text
+            for card in self.find_elements_no_wait(self.PRODUCT_CARD)
+        ]
+
         self.click(self.NEXT_PAGE_BUTTON)
-        self.wait.until(EC.presence_of_element_located(self.PRODUCT_CARD))
+
+        # Warten bis mindestens ein neuer Titel erscheint
+        self.wait.until(
+            lambda driver: any(
+                card.find_element(By.XPATH, ".//p[contains(@class,'lead')]").text not in old_titles
+                for card in self.find_elements_no_wait(self.PRODUCT_CARD)
+            )
+        )
 
     # Compliance / Security
     def is_underage_notice_visible(self) -> bool:
