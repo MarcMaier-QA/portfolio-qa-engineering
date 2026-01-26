@@ -17,6 +17,20 @@ class ShopPage(BasePage):
     PRODUCT_CARD = (By.XPATH, "//div[contains(@class,'product-card')]")
     PRODUCT_TITLE = (By.XPATH, "//p[contains(@class,'lead')]")
 
+    def __init__(self, driver):
+        super().__init__(driver)
+
+        # Falls wir noch nicht im Shop sind → navigieren
+        if "store" not in driver.current_url:
+            self.open(SHOP_URL)
+
+        # NICHT auf Produktkarten warten → Popup kommt zuerst!
+        # Stattdessen: warten bis die Seite grundsätzlich geladen ist
+        self.wait.until(
+            EC.presence_of_element_located(self.SHOP_BUTTON),
+            message="Shop-Seite wurde nicht geladen"
+        )
+
     def PRODUCT_CARD_BY_NAME(self, name: str):
         """Dynamischer Locator für eine spezifische Produktkarte"""
         return (

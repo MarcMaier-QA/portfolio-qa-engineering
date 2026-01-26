@@ -4,6 +4,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from TestAutomation.pages.base_page import BasePage
 from TestAutomation.utils.constants import CHECKOUT_URL
 
+# todo: clear_cart_if_not_empty nach dem test (nachbereitung)
 
 class CheckoutPage(BasePage):
     # Locators

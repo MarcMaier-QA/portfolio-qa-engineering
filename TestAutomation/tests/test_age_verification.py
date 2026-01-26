@@ -6,12 +6,11 @@ from TestAutomation.utils.constants import (
     PRODUCT_IGNIS_VODKA_URL,
     PRODUCT_IGNIS_VODKA_NAME
 )
-
+# todo: parametrize raus
 
 @pytest.mark.ui
 @pytest.mark.compliance
-@pytest.mark.parametrize("birthdate", ["27-08-2007"])
-def test_age_verification_allows_access_to_alcohol(login, birthdate):
+def test_age_verification_allows_access_to_alcohol(login):
     """
     COMPLIANCE TEST: TC-04
 
@@ -31,10 +30,11 @@ def test_age_verification_allows_access_to_alcohol(login, birthdate):
     - Erfolgsmeldung erscheint nach Eingabe
     - Produktseite ist erreichbar und zeigt korrekten Namen
     """
-    driver = login
-    shop_page = ShopPage(driver)
-    age_popup = AgeVerificationPopup(driver)
-    product_page = ProductPage(driver)
+    birthdate = "27-08-2007"
+
+    shop_page = ShopPage(login)
+    age_popup = AgeVerificationPopup(login)
+    product_page = ProductPage(login)
 
     # 1. Shop öffnen
     shop_page.navigate_to_shop()
