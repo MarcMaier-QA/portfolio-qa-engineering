@@ -13,7 +13,7 @@ DEFAULT_WAIT_TIME = 10 # Sekunden
 # Benutzerdaten
 TEST_USER_EMAIL = "test@test32567.de"
 TEST_USER_PASSWORD = "test123"
-TEST_USER_NAME = "Testi Mc_tester" # Benutzername, der in Bewertungen angezeigt wird
+TEST_USER_NAME = "testi Mc_tester" # Benutzername, der in Bewertungen angezeigt wird
 
 # Produkt-Namen (für die ShopPage.find_product_card Logik)
 PRODUCT_CHERRIES = "Cherries"
