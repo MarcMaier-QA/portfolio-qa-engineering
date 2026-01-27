@@ -30,6 +30,19 @@ class ProductPage(BasePage):
         self.wait.until(EC.visibility_of_element_located(self.PRODUCT_TITLE))
         return self
 
+    def scroll_to(self, locator):
+        element = self.wait.until(EC.presence_of_element_located(locator))
+        self.driver.execute_script(
+            "arguments[0].scrollIntoView({block: 'center'});",
+            element
+        )
+
+    def wait_for_user_review(self, username: str):
+        locator = self.user_review_container(username)
+        self.wait.until(EC.visibility_of_element_located(locator))
+        self.scroll_to(locator)
+        return self
+
     # Review Locators
     def user_review_container(self, username: str):
         return (
@@ -127,12 +140,39 @@ class ProductPage(BasePage):
         return self
 
     def delete_my_review(self):
-        if not self.find_elements_no_wait(self.REVIEW_MENU_BUTTON):
+        # 1. Existiert überhaupt ein Review?
+        elements = self.find_elements_no_wait(self.REVIEW_MENU_BUTTON)
+        if not elements:
             return self
 
-        self.get_element(self.REVIEW_MENU_BUTTON).click()
-        self.wait.until(EC.visibility_of_element_located(self.DROPDOWN_MENU))
-        self.get_element(self.DELETE_BUTTON).click()
+        # 2. Scroll zum Review-Menü
+        self.scroll_to(self.REVIEW_MENU_BUTTON)
+
+        # 3. Jetzt auf Klickbarkeit warten
+        self.wait.until(
+            EC.element_to_be_clickable(self.REVIEW_MENU_BUTTON)
+        ).click()
+
+        # 4. Dropdown erscheint
+        self.wait.until(
+            EC.visibility_of_element_located(self.DROPDOWN_MENU)
+        )
+
+        # 5. Delete klicken
+        self.wait.until(
+            EC.element_to_be_clickable(self.DELETE_BUTTON)
+        ).click()
+
+        # 6. Alert bestätigen
         self.driver.switch_to.alert.accept()
-        self.wait.until(EC.visibility_of_element_located(self.ADD_COMMENT_HEADER))
+
+        # 7. Warten bis wieder „Add a comment“-State erreicht ist
+        self.wait.until(
+            EC.visibility_of_element_located(self.ADD_COMMENT_HEADER)
+        )
+
+        self.wait.until(
+            EC.invisibility_of_element_located(self.REVIEW_MENU_BUTTON)
+        )
+
         return self
