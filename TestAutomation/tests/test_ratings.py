@@ -11,10 +11,15 @@ from TestAutomation.utils.constants import (
 
 def test_5_stars_with_comment(oranges_product_page):
     """TC-01: 5 Sterne + Kommentar (prüft bekannten Kommentar-Bug)."""
+    oranges_product_page.delete_my_review()
+
     comment = "Tolles Produkt!"
     number_of_stars = 5
 
     oranges_product_page.rate_product(stars=number_of_stars, comment=comment)
+
+    # Warten bis Review - Bereich für User sichtbar ist
+    oranges_product_page.wait_for_user_review(TEST_USER_NAME)
 
     assert oranges_product_page.is_comment_visible(TEST_USER_NAME, comment), "Kommentar fehlt nach Bewertung."
     assert (
