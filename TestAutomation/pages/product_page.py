@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from TestAutomation.pages.base_page import BasePage
+from TestAutomation.utils.constants import PRODUCT_IGNIS_VODKA_URL
 
 
 class ProductPage(BasePage):
@@ -176,3 +177,11 @@ class ProductPage(BasePage):
         )
 
         return self
+
+    def open_ignis_vodka(self):
+        self.open(PRODUCT_IGNIS_VODKA_URL)
+        self.wait.until(EC.visibility_of_element_located(self.PRODUCT_TITLE))
+        return self
+
+    def has_product_name(self, expected_name: str) -> bool:
+        return expected_name in self.get_text(self.PRODUCT_TITLE)
