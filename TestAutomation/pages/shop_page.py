@@ -1,8 +1,8 @@
-import time
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
+
+from TestAutomation.pages.age_verification_popup import AgeVerificationPopup
 from TestAutomation.pages.base_page import BasePage
 from TestAutomation.utils.constants import SHOP_URL
 
@@ -17,18 +17,17 @@ class ShopPage(BasePage):
     PRODUCT_CARD = (By.XPATH, "//div[contains(@class,'product-card')]")
     PRODUCT_TITLE = (By.XPATH, "//p[contains(@class,'lead')]")
 
-    def __init__(self, driver):
-        super().__init__(driver)
+    def open(self):
+        self.driver.get(SHOP_URL)
+        self.wait.until(EC.presence_of_element_located(self.SHOP_BUTTON))
+        return self
 
-        # Falls wir noch nicht im Shop sind → navigieren
-        if "store" not in driver.current_url:
-            self.open(SHOP_URL)
+    def verify_age_as_adult(self, birthdate: str):
+        popup = AgeVerificationPopup(self.driver)
+        popup.confirm_age(birthdate)
 
-        # NICHT auf Produktkarten warten → Popup kommt zuerst!
-        # Stattdessen: warten bis die Seite grundsätzlich geladen ist
-        self.wait.until(
-            EC.presence_of_element_located(self.SHOP_BUTTON),
-            message="Shop-Seite wurde nicht geladen"
+        assert popup.is_success_message_displayed(), (
+            "Expected success message for adult user"
         )
 
     def PRODUCT_CARD_BY_NAME(self, name: str):
@@ -181,3 +180,39 @@ class ShopPage(BasePage):
         if not elements:
             return False
         return elements[0].is_displayed()
+
+    def verify_age_as_minor(self, birthdate: str):
+        popup = AgeVerificationPopup(self.driver)
+        popup.submit_birthdate(birthdate)
+
+        assert popup.is_warning_message_displayed(), (
+            "Expected warning message for underage user"
+        )
+
+    def verify_age_without_birthdate(self):
+        popup = AgeVerificationPopup(self.driver)
+        popup.click_confirm()
+
+        assert popup.is_warning_message_displayed(), (
+            "Popup should remain visible when no birthdate is entered"
+        )
+
+    def confirm_with_invalid_birthdate(self, value: str):
+        assert self.is_popup_displayed(), "Age verification popup is not visible"
+
+        self.enter_birthdate_raw(value)
+        self.click_confirm()
+
+        self.wait.until(
+            EC.visibility_of_element_located(self.ERROR_MESSAGE)
+        )
+
+        return self
+
+    def verify_age_with_invalid_date_format(self, birthdate: str):
+        popup = AgeVerificationPopup(self.driver)
+        popup.submit_birthdate(birthdate)
+
+        assert popup.is_warning_message_displayed(), (
+            "Popup should remain visible for invalid date format"
+        )
