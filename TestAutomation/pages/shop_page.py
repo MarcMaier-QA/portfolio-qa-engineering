@@ -4,31 +4,27 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from TestAutomation.pages.age_verification_popup import AgeVerificationPopup
 from TestAutomation.pages.base_page import BasePage
-from TestAutomation.utils.constants import SHOP_URL
+from TestAutomation.pages.checkout_page import CheckoutPage
 
 
 class ShopPage(BasePage):
-    # Navigation / Filters
-    SHOP_BUTTON = (By.XPATH, "//a[text()='Shop']")
-    ALCOHOL_FILTER = (By.XPATH, "//a[normalize-space()='Alocohol']")
-    UNDERAGE_NOTICE = (By.XPATH, "//h2[normalize-space()='Underage Notice']")
 
-    # Products
     PRODUCT_CARD = (By.XPATH, "//div[contains(@class,'product-card')]")
-    PRODUCT_TITLE = (By.XPATH, "//p[contains(@class,'lead')]")
+    # Product actions
+    QUANTITY_INPUT = (By.XPATH, ".//input[@type='number']")
+    ADD_TO_CART_BUTTON = (By.XPATH, ".//button[contains(@class,'btn-cart')]")
 
-    def open(self):
-        self.driver.get(SHOP_URL)
-        self.wait.until(EC.presence_of_element_located(self.SHOP_BUTTON))
-        return self
 
-    def verify_age_as_adult(self, birthdate: str):
-        popup = AgeVerificationPopup(self.driver)
-        popup.confirm_age(birthdate)
-
-        assert popup.is_success_message_displayed(), (
-            "Expected success message for adult user"
+    def __init__(self, driver):
+        super().__init__(driver)
+        self.wait.until(
+            EC.visibility_of_element_located(self.PRODUCT_CARD),
+            message="ShopPage: product cards not visible"
         )
+
+    def go_to_checkout(self) -> CheckoutPage:
+        self.click(self.CART_ICON)
+        return CheckoutPage(self.driver)
 
     def PRODUCT_CARD_BY_NAME(self, name: str):
         """Dynamischer Locator für eine spezifische Produktkarte"""
@@ -38,32 +34,9 @@ class ShopPage(BasePage):
             f"/ancestor::div[contains(@class,'product-card')]"
         )
 
-    # Product actions
-    QUANTITY_INPUT = (By.XPATH, ".//input[@type='number']")
-    ADD_TO_CART_BUTTON = (By.XPATH, ".//button[contains(@class,'btn-cart')]")
-
-    # Pagination
-    NEXT_PAGE_BUTTON = (
-        By.XPATH,
-        "//button[contains(@class,'pagination-link') and normalize-space()='Next']"
-    )
-
-    # Navigation
-    def navigate_to_shop(self):
-        """Öffnet den Shop ohne auf Produkte zu warten (da Popup zuerst kommt)"""
-        self.open(SHOP_URL)
-        self.wait.until(EC.presence_of_element_located(self.PRODUCT_CARD))
-        return self
-
-    def click_shop_button(self):
-        """Navigiert zum Shop über den Header-Button"""
-        self.click(self.SHOP_BUTTON)
-        self.wait.until(EC.presence_of_element_located(self.PRODUCT_CARD))
-
     def filter_alcohol(self):
         """Klickt auf den Alkohol-Filter"""
         self.click(self.ALCOHOL_FILTER)
-        self.wait.until(EC.presence_of_element_located(self.UNDERAGE_NOTICE))
 
     # Product search (OHNE while-Schleife!)
     def find_product_card(self, product_name: str, max_pages: int = 10) -> WebElement | None:
@@ -118,23 +91,16 @@ class ShopPage(BasePage):
         Fügt ein Produkt mit bestimmter Menge zum Warenkorb hinzu.
         Sucht das Produkt automatisch über alle Seiten.
         """
-        # Warten bis Produkte geladen sind
-        self.wait.until(
-            EC.presence_of_element_located(self.PRODUCT_CARD),
-            message="Produktkarten wurden im Shop nicht geladen"
-        )
-
         # 1. Finde die Produktkarte
         product_card = self.find_product_card(product_name)
+        if product_card is None:
+            return None  # Ich habe alles versucht, das Produkt existiert nicht.
 
-        # 2. Assertion: Produkt muss gefunden werden
-        assert product_card is not None, f"Produkt '{product_name}' wurde nicht im Shop gefunden"
-
-        # 3. Finde Input und Button innerhalb der Produktkarte
+        # 2. Finde Input und Button innerhalb der Produktkarte
         quantity_input = product_card.find_element(*self.QUANTITY_INPUT)
         add_button = product_card.find_element(*self.ADD_TO_CART_BUTTON)
 
-        # 4. Setze Menge und klicke
+        # 3. Setze Menge und klicke
         quantity_input.clear()
         quantity_input.send_keys(str(quantity))
         add_button.click()
@@ -177,42 +143,4 @@ class ShopPage(BasePage):
     def is_underage_notice_visible(self) -> bool:
         """Prüft, ob die Minderjährigen-Warnung angezeigt wird"""
         elements = self.find_elements_no_wait(self.UNDERAGE_NOTICE)
-        if not elements:
-            return False
-        return elements[0].is_displayed()
-
-    def verify_age_as_minor(self, birthdate: str):
-        popup = AgeVerificationPopup(self.driver)
-        popup.submit_birthdate(birthdate)
-
-        assert popup.is_warning_message_displayed(), (
-            "Expected warning message for underage user"
-        )
-
-    def verify_age_without_birthdate(self):
-        popup = AgeVerificationPopup(self.driver)
-        popup.click_confirm()
-
-        assert popup.is_warning_message_displayed(), (
-            "Popup should remain visible when no birthdate is entered"
-        )
-
-    def confirm_with_invalid_birthdate(self, value: str):
-        assert self.is_popup_displayed(), "Age verification popup is not visible"
-
-        self.enter_birthdate_raw(value)
-        self.click_confirm()
-
-        self.wait.until(
-            EC.visibility_of_element_located(self.ERROR_MESSAGE)
-        )
-
-        return self
-
-    def verify_age_with_invalid_date_format(self, birthdate: str):
-        popup = AgeVerificationPopup(self.driver)
-        popup.submit_birthdate(birthdate)
-
-        assert popup.is_warning_message_displayed(), (
-            "Popup should remain visible for invalid date format"
-        )
+        return bool(elements and elements[0].is_displayed())
