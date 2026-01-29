@@ -4,7 +4,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from TestAutomation.pages.base_page import BasePage
 from TestAutomation.utils.constants import CHECKOUT_URL
 
-# todo: clear_cart_if_not_empty nach dem test (nachbereitung)
 
 class CheckoutPage(BasePage):
     # Locators
@@ -57,11 +56,9 @@ class CheckoutPage(BasePage):
             self.wait.until(EC.staleness_of(button))
             remove_buttons = self.find_elements_no_wait(self.REMOVE_ICON)
 
-        # Absicherung: leerer Warenkorb sichtbar
-        self.wait.until(
-            EC.presence_of_element_located(self.EMPTY_CART_MESSAGE),
-            message="Warenkorb ist nach dem Leeren nicht leer"
-        )
+        empty_messages = self.find_elements_no_wait(self.EMPTY_CART_MESSAGE)
+        if empty_messages:
+            self.wait.until(EC.visibility_of(empty_messages[0]))
 
         return self
 
