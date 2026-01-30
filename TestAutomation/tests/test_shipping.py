@@ -16,12 +16,27 @@ def test_free_shipping(shop):
     """
     TC-08: Kostenloser Versand bei Erreichen des Schwellenwerts
     """
-    shop.add_product_to_cart(PRODUCT_CHERRIES, 10) \
-        .go_to_checkout() \
-        .verify_shipping_costs(
-            expected_shipping=SHIPPING_COST_FREE,
-            expected_subtotal=TEN_CHERRIES_SUBTOTAL
-        )
+    cherries_quantity = 10
+
+    shop.add_product_to_cart(PRODUCT_CHERRIES, quantity=cherries_quantity)
+
+    checkout = shop.go_to_checkout()
+    checkout.wait_until_totals_updated(TEN_CHERRIES_SUBTOTAL)
+
+    totals = checkout.get_totals()
+
+    assert totals["subtotal"] == TEN_CHERRIES_SUBTOTAL, (
+        f"Expected subtotal {TEN_CHERRIES_SUBTOTAL}, "
+        f"but got {totals['subtotal']}"
+    )
+    assert totals["shipping"] == SHIPPING_COST_FREE, (
+        f"Expected shipping {SHIPPING_COST_FREE}, "
+        f"but got {totals['shipping']}"
+    )
+    assert totals["total"] == TEN_CHERRIES_SUBTOTAL + SHIPPING_COST_FREE,(
+        f"Expected total {TEN_CHERRIES_SUBTOTAL + SHIPPING_COST_FREE}, "
+        f"but got {totals['total']}"
+    )
 
 
 def test_standard_shipping(shop):
@@ -41,9 +56,21 @@ def test_standard_shipping(shop):
     shop.add_product_to_cart(PRODUCT_CHERRIES, cherries_quantity)
 
     checkout = shop.go_to_checkout()
-    checkout.verify_shipping_costs(
-        expected_shipping=SHIPPING_COST_STANDARD,
-        expected_subtotal=TWO_CHERRIES_SUBTOTAL
+    checkout.wait_until_totals_updated(TWO_CHERRIES_SUBTOTAL)
+
+    totals = checkout.get_totals()
+
+    assert totals["subtotal"] == TWO_CHERRIES_SUBTOTAL, (
+        f"Expected subtotal {TWO_CHERRIES_SUBTOTAL}, "
+        f"but got {totals['subtotal']}"
+    )
+    assert totals["shipping"] == SHIPPING_COST_STANDARD, (
+        f"Expected shipping {SHIPPING_COST_STANDARD}, "
+        f"but got {totals['shipping']}"
+    )
+    assert totals["total"] == TWO_CHERRIES_SUBTOTAL + SHIPPING_COST_STANDARD, (
+        f"Expected total {TWO_CHERRIES_SUBTOTAL + SHIPPING_COST_STANDARD}, "
+        f"but got {totals['total']}"
     )
 
 
@@ -65,13 +92,25 @@ def test_shipping_update_on_removal(shop):
     shop.add_product_to_cart(PRODUCT_APPLES, apple_quantity)
     shop.add_product_to_cart(PRODUCT_CHERRIES, cherries_quantity)
 
-    shop.go_to_checkout() \
-        .verify_shipping_costs(
-        expected_shipping=SHIPPING_COST_FREE,
-        expected_subtotal=SEVEN_CHERRIES_SUBTOTAL + PRICE_PINK_LADY_APPLE
-    ) \
-        .remove_product_from_cart(PRODUCT_APPLES) \
-        .verify_shipping_costs(
-        expected_shipping=SHIPPING_COST_STANDARD,
-        expected_subtotal=SEVEN_CHERRIES_SUBTOTAL
+    checkout = shop.go_to_checkout()
+    checkout.wait_until_totals_updated(
+        SEVEN_CHERRIES_SUBTOTAL + PRICE_PINK_LADY_APPLE
     )
+
+    totals = checkout.get_totals()
+    assert totals["shipping"] == SHIPPING_COST_FREE, (
+        f"Expected shipping {SHIPPING_COST_FREE}, "
+        f"but got {totals['shipping']}"
+    )
+
+    checkout.remove_product_from_cart(PRODUCT_APPLES)
+    checkout.wait_until_totals_updated(SEVEN_CHERRIES_SUBTOTAL)
+
+    totals = checkout.get_totals()
+
+    # FAILS – documented business logic bug
+    assert totals["shipping"] == SHIPPING_COST_STANDARD, (
+        f"Expected shipping {SHIPPING_COST_STANDARD}, "
+        f"but got {totals['shipping']}"
+    )
+
