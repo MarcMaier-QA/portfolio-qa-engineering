@@ -32,16 +32,7 @@ class ShopPage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
 
-        popup = AgeVerificationPopup(self.driver)
-        if popup.is_popup_displayed():
-            popup.confirm_age()
-
-        self.wait.until(
-            EC.presence_of_all_elements_located(self.PRODUCT_CARD),
-            message="ShopPage: product cards not present"
-        )
-
-        self._wait_until_product_list_stable()
+        self.age_popup = AgeVerificationPopup(self.driver)
 
     # Navigation
     def go_to_checkout(self) -> CheckoutPage:
@@ -152,3 +143,18 @@ class ShopPage(BasePage):
             product_titles_stable,
             message="ShopPage: product list not stable"
         )
+
+    def wait_until_shop_ready(self):
+        """
+        Wait until the shop is usable (after age verification).
+        """
+        self.wait.until(
+            EC.presence_of_all_elements_located(self.PRODUCT_CARD),
+            message="ShopPage: product cards not present"
+        )
+        self._wait_until_product_list_stable()
+
+    def has_visible_products(self) -> bool:
+        """checks if product cards are visible."""
+        cards = self.find_elements_no_wait(self.PRODUCT_CARD)
+        return any(card.is_displayed() for card in cards)
