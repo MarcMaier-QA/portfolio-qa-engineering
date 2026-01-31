@@ -12,15 +12,15 @@ from TestAutomation.utils.constants import (
 )
 
 @pytest.mark.ui
-def test_free_shipping(shop):
+def test_free_shipping(adult_shop):
     """
-    TC-08: Kostenloser Versand bei Erreichen des Schwellenwerts
+    TC-08: Free shipping when the threshold is reached.
     """
     cherries_quantity = 10
 
-    shop.add_product_to_cart(PRODUCT_CHERRIES, quantity=cherries_quantity)
+    adult_shop.add_product_to_cart(PRODUCT_CHERRIES, quantity=cherries_quantity)
 
-    checkout = shop.go_to_checkout()
+    checkout = adult_shop.go_to_checkout()
     checkout.wait_until_totals_updated(TEN_CHERRIES_SUBTOTAL)
 
     totals = checkout.get_totals()
@@ -39,23 +39,23 @@ def test_free_shipping(shop):
     )
 
 
-def test_standard_shipping(shop):
+def test_standard_shipping(adult_shop):
     """
-    TC-09: Kostenpflichtiger Versand unter dem Schwellenwert
+    TC-09: Paid shipping below the threshold
 
     Szenario:
-    - Bestellwert: 5.00€ (2x Cherries à 2.50€)
-    - Schwellenwert: 20.00€
-    - Erwartete Versandkosten: 5.00€ (Standard)
+    - Order value: 5.00€ (2x Cherries à 2.50€)
+    - Threshold: 20.00€
+    - Expected shipping costs: 5.00€ (Standard)
 
-    Prüft ob Versandkosten korrekt berechnet werden wenn
-    Bestellwert unter dem Gratis-Schwellenwert liegt.
+    Checks if shipping costs are calculated correctly when the
+    order value is below the free shipping threshold.
     """
     cherries_quantity = 2
 
-    shop.add_product_to_cart(PRODUCT_CHERRIES, cherries_quantity)
+    adult_shop.add_product_to_cart(PRODUCT_CHERRIES, cherries_quantity)
 
-    checkout = shop.go_to_checkout()
+    checkout = adult_shop.go_to_checkout()
     checkout.wait_until_totals_updated(TWO_CHERRIES_SUBTOTAL)
 
     totals = checkout.get_totals()
@@ -74,7 +74,7 @@ def test_standard_shipping(shop):
     )
 
 
-def test_shipping_update_on_removal(shop):
+def test_shipping_update_on_removal(adult_shop):
     """
     TC-10 – KNOWN BUG
 
@@ -89,10 +89,10 @@ def test_shipping_update_on_removal(shop):
     apple_quantity = 1
     cherries_quantity = 7
 
-    shop.add_product_to_cart(PRODUCT_APPLES, apple_quantity)
-    shop.add_product_to_cart(PRODUCT_CHERRIES, cherries_quantity)
+    adult_shop.add_product_to_cart(PRODUCT_APPLES, apple_quantity)
+    adult_shop.add_product_to_cart(PRODUCT_CHERRIES, cherries_quantity)
 
-    checkout = shop.go_to_checkout()
+    checkout = adult_shop.go_to_checkout()
     checkout.wait_until_totals_updated(
         SEVEN_CHERRIES_SUBTOTAL + PRICE_PINK_LADY_APPLE
     )
