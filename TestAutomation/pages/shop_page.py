@@ -5,6 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from TestAutomation.pages.age_verification_popup import AgeVerificationPopup
 from TestAutomation.pages.base_page import BasePage
 from TestAutomation.pages.checkout_page import CheckoutPage
+from TestAutomation.pages.product_page import ProductPage
 
 
 class ShopPage(BasePage):
@@ -158,3 +159,22 @@ class ShopPage(BasePage):
         """checks if product cards are visible."""
         cards = self.find_elements_no_wait(self.PRODUCT_CARD)
         return any(card.is_displayed() for card in cards)
+
+    def open_product(self, product_name: str) -> ProductPage:
+        """
+        Finds a product card and opens its product detail page.
+        """
+        product_card = self.find_product_card(product_name)
+        if product_card is None:
+            raise AssertionError(f"Product '{product_name}' not found in shop")
+
+        title = product_card.find_element(*self.PRODUCT_TITLE_IN_CARD)
+
+        self.wait.until(
+            EC.element_to_be_clickable(title),
+            message=f"Product '{product_name}' title not clickable"
+        ).click()
+
+        product_page = ProductPage(self.driver)
+        product_page.wait_until_loaded()
+        return product_page

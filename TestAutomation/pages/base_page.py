@@ -26,12 +26,8 @@ class BasePage:
 
     def is_visible(self, locator) -> bool:
         """Prüft, ob ein Element sichtbar ist (Ohne Try-Except)"""
-        # Wir warten, bis Selenium das Element im DOM findet
-        self.wait.until(EC.presence_of_element_located(locator))
         elements = self.driver.find_elements(*locator)
-        if elements:
-            return elements[0].is_displayed()
-        return False
+        return elements and elements[0].is_displayed()
 
     def is_present(self, locator, timeout: int = None) -> bool:
         """
