@@ -134,33 +134,18 @@ class CheckoutPage(BasePage):
         self.wait.until(EC.url_contains("checkout"))
         return self
 
-    def verify_shipping_costs(self, expected_shipping: float, expected_subtotal: float):
-        """
-        Zentrale Hilfsfunktion für Versandkosten-Assertions.
-
-        Prüft:
-        1. Zwischensumme (Produktkosten) ist korrekt
-        2. Versandkosten sind korrekt
-        3. Gesamtsumme (Produkte + Versand) ist korrekt
-
-        Args:
-            checkout_page: CheckoutPage Instanz
-            expected_shipping: Erwartete Versandkosten
-            expected_subtotal: Erwartete Produkt-Zwischensumme
-        """
+    def wait_until_totals_updated(self, expected_subtotal: float):
         self.wait.until(
             lambda driver: self.get_product_total_as_float() == expected_subtotal,
             message="Zwischensumme wurde nicht korrekt aktualisiert"
         )
 
-        actual_subtotal = self.get_product_total_as_float()
-        actual_shipping = self.get_shipping_cost_as_float()
-        actual_total = self.get_total_as_float()
-
-        expected_total = expected_subtotal + expected_shipping
-
-        assert actual_subtotal == expected_subtotal
-        assert actual_shipping == expected_shipping
-        assert actual_total == expected_total
-
-        return self
+    def get_totals(self) -> dict:
+        """
+        Liefert alle relevanten Beträge aus dem Checkout.
+        """
+        return {
+            "subtotal": self.get_product_total_as_float(),
+            "shipping": self.get_shipping_cost_as_float(),
+            "total": self.get_total_as_float(),
+        }

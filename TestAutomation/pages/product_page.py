@@ -1,7 +1,6 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from TestAutomation.pages.base_page import BasePage
-from TestAutomation.utils.constants import PRODUCT_IGNIS_VODKA_URL
 
 
 class ProductPage(BasePage):
@@ -25,12 +24,14 @@ class ProductPage(BasePage):
     DELETE_BUTTON = (By.XPATH, "//button[normalize-space()='Delete']")
     ADD_COMMENT_HEADER = (By.XPATH, "//h5[contains(text(),'Add a comment')]")
 
-    # Navigation
-    def navigate_to(self, url: str):
-        self.open(url)
-        self.wait.until(EC.visibility_of_element_located(self.PRODUCT_TITLE))
+    def wait_until_loaded(self):
+        self.wait.until(
+            EC.visibility_of_element_located(self.PRODUCT_TITLE),
+            message="ProductPage: product title not visible"
+        )
         return self
 
+    # Navigation
     def scroll_to(self, locator):
         element = self.wait.until(EC.presence_of_element_located(locator))
         self.driver.execute_script(
@@ -52,11 +53,6 @@ class ProductPage(BasePage):
             f"[.//strong[normalize-space()='{username}']]"
         )
 
-    def user_review_text(self, username: str):
-        return (
-            By.XPATH,
-            f"{self.user_review_container(username)[1]}//p"
-        )
 
     def user_review_rating(self, username: str):
         return (
@@ -64,7 +60,6 @@ class ProductPage(BasePage):
             f"{self.user_review_container(username)[1]}//span[contains(@class,'small')]"
         )
 
-    # Assertions / Getters
     def is_rating_form_visible(self) -> bool:
         elements = self.find_elements_no_wait(self.RATING_FORM)
         return bool(elements and elements[0].is_displayed())
@@ -177,11 +172,3 @@ class ProductPage(BasePage):
         )
 
         return self
-
-    def open_ignis_vodka(self):
-        self.open(PRODUCT_IGNIS_VODKA_URL)
-        self.wait.until(EC.visibility_of_element_located(self.PRODUCT_TITLE))
-        return self
-
-    def has_product_name(self, expected_name: str) -> bool:
-        return expected_name in self.get_text(self.PRODUCT_TITLE)
