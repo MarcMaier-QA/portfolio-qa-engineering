@@ -11,10 +11,15 @@ from TestAutomation.utils.constants import (
     PRICE_PINK_LADY_APPLE,
 )
 
+
 @pytest.mark.ui
+@pytest.mark.shipping
 def test_free_shipping(adult_shop):
     """
-    TC-08: Free shipping when the threshold is reached.
+    TC-08
+
+    Verifies that free shipping is applied once the free-shipping
+    threshold is reached.
     """
     cherries_quantity = 10
 
@@ -33,23 +38,25 @@ def test_free_shipping(adult_shop):
         f"Expected shipping {SHIPPING_COST_FREE}, "
         f"but got {totals['shipping']}"
     )
-    assert totals["total"] == TEN_CHERRIES_SUBTOTAL + SHIPPING_COST_FREE,(
+    assert totals["total"] == TEN_CHERRIES_SUBTOTAL + SHIPPING_COST_FREE, (
         f"Expected total {TEN_CHERRIES_SUBTOTAL + SHIPPING_COST_FREE}, "
         f"but got {totals['total']}"
     )
 
 
+@pytest.mark.ui
+@pytest.mark.shipping
 def test_standard_shipping(adult_shop):
     """
-    TC-09: Paid shipping below the threshold
+    TC-09
 
-    Szenario:
-    - Order value: 5.00€ (2x Cherries à 2.50€)
-    - Threshold: 20.00€
-    - Expected shipping costs: 5.00€ (Standard)
+    Verifies that standard shipping costs are applied when the
+    order value is below the free-shipping threshold.
 
-    Checks if shipping costs are calculated correctly when the
-    order value is below the free shipping threshold.
+    Scenario:
+    - Order value: 5.00€ (2x Cherries at 2.50€)
+    - Free-shipping threshold: 20.00€
+    - Expected shipping costs: 5.00€
     """
     cherries_quantity = 2
 
@@ -74,17 +81,24 @@ def test_standard_shipping(adult_shop):
     )
 
 
+@pytest.mark.ui
+@pytest.mark.shipping
+@pytest.mark.known_bug
 def test_shipping_update_on_removal(adult_shop):
     """
     TC-10 – KNOWN BUG
 
-    Expected:
-    - Shipping cost updates to 5.00€ when cart value drops below threshold
+    Verifies that shipping costs are recalculated when the cart
+    value drops below the free-shipping threshold after removing
+    a product.
 
-    Actual:
-    - Shipping cost remains 0.00€
+    Expected behavior:
+    - Shipping cost updates from 0.00€ to 5.00€
 
-    This test currently FAILS and documents a business logic bug.
+    Actual behavior:
+    - Shipping cost incorrectly remains at 0.00€
+
+    This test is expected to FAIL and documents a business logic bug.
     """
     apple_quantity = 1
     cherries_quantity = 7
@@ -108,9 +122,8 @@ def test_shipping_update_on_removal(adult_shop):
 
     totals = checkout.get_totals()
 
-    # FAILS – documented business logic bug
+    # Fails due to documented business logic bug
     assert totals["shipping"] == SHIPPING_COST_STANDARD, (
         f"Expected shipping {SHIPPING_COST_STANDARD}, "
         f"but got {totals['shipping']}"
     )
-
