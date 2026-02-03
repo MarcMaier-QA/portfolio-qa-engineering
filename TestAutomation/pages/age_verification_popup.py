@@ -4,9 +4,12 @@ from TestAutomation.pages.base_page import BasePage
 
 class AgeVerificationPopup(BasePage):
     """
-    Page Object für das Altersverifikations-Popup.
+    Page Object representing the age verification popup.
 
-    Wird angezeigt, wenn Nutzer auf alkoholische Produkte zugreifen.
+    This popup is displayed when a user accesses the shop
+    and must confirm that they are at least 18 years old
+    in order to view or purchase age-restricted products
+    (e.g. alcoholic beverages).
     """
 
     # Locators
@@ -18,13 +21,20 @@ class AgeVerificationPopup(BasePage):
 
     # State checks
     def is_popup_displayed(self) -> bool:
-        """Prüft mit kurzem Wait, ob das Popup erscheint."""
+        """
+        Checks whether the age verification popup is displayed.
+
+        Uses a short explicit wait to determine if the popup
+        container becomes visible.
+        """
         return self.is_visible(self.POPUP_CONTAINER)
 
     def is_date_input_visible(self) -> bool:
         """
-        Prüft, ob das Datumseingabefeld sichtbar ist.
-        Alternative Methode zur Popup-Erkennung.
+        Checks if the date input field is visible.
+
+        This is used as an alternative popup detection mechanism
+        in case the popup container itself is not reliable.
         """
         elements = self.find_elements_no_wait(self.DATE_INPUT)
         if not elements:
@@ -33,8 +43,10 @@ class AgeVerificationPopup(BasePage):
 
     def is_success_message_displayed(self) -> bool:
         """
-        Prüft, ob die Erfolgsmeldung angezeigt wird.
-        (Erscheint, wenn User über 18 ist)
+        Checks if the success message is displayed.
+
+        The success message appears when the user enters
+        a birthdate indicating they are 18 years or older.
         """
         elements = self.find_elements_no_wait(self.SUCCESS_MESSAGE)
         if not elements:
@@ -43,8 +55,10 @@ class AgeVerificationPopup(BasePage):
 
     def is_warning_message_displayed(self) -> bool:
         """
-        Prüft, ob die Warnmeldung angezeigt wird.
-        (Erscheint, wenn User unter 18 ist)
+        Checks if the warning message is displayed.
+
+        The warning message appears when the user enters
+        a birthdate indicating they are under 18 years old.
         """
         elements = self.find_elements_no_wait(self.WARNING_MESSAGE)
         if not elements:
@@ -52,14 +66,24 @@ class AgeVerificationPopup(BasePage):
         return elements[0].is_displayed()
 
     def get_success_message_text(self) -> str:
-        """Gibt den Text der Erfolgsmeldung zurück"""
+        """
+        Returns the text of the success message.
+
+        If the message is not present, an empty string is returned
+        to avoid unnecessary exceptions in tests.
+        """
         elements = self.find_elements_no_wait(self.SUCCESS_MESSAGE)
         if not elements:
             return ""
         return elements[0].text
 
     def get_warning_message_text(self) -> str:
-        """Gibt den Text der Warnmeldung zurück"""
+        """
+        Returns the text of the warning message.
+
+        If the message is not present, an empty string is returned
+        to allow safe assertions in test cases.
+        """
         elements = self.find_elements_no_wait(self.WARNING_MESSAGE)
         if not elements:
             return ""
@@ -68,40 +92,47 @@ class AgeVerificationPopup(BasePage):
     # Actions
     def enter_birthdate(self, birthdate: str):
         """
-        Gibt ein Geburtsdatum ein (Format: DD-MM-YYYY).
+        Enters a birthdate into the date input field.
 
         Args:
-            birthdate: Geburtsdatum im Format DD-MM-YYYY (z.B. "27-08-2007")
+            birthdate: Birthdate in format DD-MM-YYYY
+                       (e.g. "27-08-2007")
         """
         self.type(self.DATE_INPUT, birthdate)
 
     def click_confirm(self):
-        """Klickt den Confirm-Button"""
+        """
+        Clicks the confirm button to submit the entered birthdate.
+        """
         self.click(self.CONFIRM_BUTTON)
 
     def submit_birthdate(self, birthdate: str):
         """
-        Komplett-Aktion: Geburtsdatum eingeben und bestätigen.
+        Performs the complete interaction for age verification:
+        entering a birthdate and confirming it.
 
         Args:
-            birthdate: Geburtsdatum im Format DD-MM-YYYY
+            birthdate: Birthdate in format DD-MM-YYYY
         """
         self.enter_birthdate(birthdate)
         self.click_confirm()
 
     def confirm_age(self, birthdate: str = "27-08-2007"):
         """
-        Convenience-Methode: Bestätigt das Alter mit einem Standard-Geburtsdatum.
-        Nützlich für Setup in Fixtures.
+        Convenience method to confirm age verification.
+
+        This method is primarily used in fixtures or setup steps
+        to ensure the popup is handled before test execution.
 
         Args:
-            birthdate: Standard ist ein volljähriges Datum (27-08-2007)
+            birthdate: A valid birthdate indicating an adult user.
+                       Defaults to "27-08-2007".
         """
-        # Prüfe ob Popup überhaupt da ist
+        # Check whether the popup is present at all
         if not self.is_popup_displayed() and not self.is_date_input_visible():
-            return  # Kein Popup, nichts zu tun
+            return  # Popup not shown → nothing to do
 
         self.submit_birthdate(birthdate)
 
-        # Warte kurz bis Popup verschwindet oder Nachricht erscheint
+        # Wait until the popup disappears or a message is shown
         self.wait_until_not_visible(self.POPUP_CONTAINER)
