@@ -14,12 +14,12 @@ class ShopPage(BasePage):
     PRODUCT_CARD = (By.XPATH, "//div[contains(@class,'product-card')]")
     PRODUCT_TITLE_IN_CARD = (By.XPATH, ".//p[contains(@class,'lead')]")
 
-    # Product actions
+    # Product actions inside a card
     QUANTITY_INPUT = (By.XPATH, ".//input[@type='number']")
     ADD_TO_CART_BUTTON = (By.XPATH, ".//button[contains(@class,'btn-cart')]")
 
-    # Filters / Notices
-    # Typo on GroceryMate is intentional
+    # Filters / notices
+    # Typo "Alocohol" exists in the application and is intentionally mirrored here
     ALCOHOL_FILTER = (By.XPATH, "//a[normalize-space()='Alocohol']")
     UNDERAGE_NOTICE = (By.XPATH, "//h2[normalize-space()='Underage Notice']")
 
@@ -33,30 +33,57 @@ class ShopPage(BasePage):
     def __init__(self, driver):
         super().__init__(driver)
 
+        # Age verification popup is part of the shop flow
+        # Initializing it here keeps responsibility close to where it is needed
         self.age_popup = AgeVerificationPopup(self.driver)
 
     # Navigation
     def go_to_checkout(self) -> CheckoutPage:
+        """
+        Navigates to the checkout via the cart icon.
+
+        Uses click-based navigation instead of direct URLs
+        to stay close to real user behavior.
+        """
         self.click(self.CART_ICON)
         return CheckoutPage(self.driver)
 
     # Filters / Visibility
     def filter_alcohol(self):
-        """Clicks the alcohol filter"""
+        """
+        Applies the alcohol filter.
+
+        Clicking the filter instead of reloading the page
+        ensures we test the real UI behavior.
+        """
         self.click(self.ALCOHOL_FILTER)
 
     def is_underage_notice_visible(self) -> bool:
-        """Checks if underage notice is displayed"""
+        """
+        Checks whether the underage notice is currently displayed.
+
+        Uses a no-wait lookup to allow flexible state assertions.
+        """
         elements = self.find_elements_no_wait(self.UNDERAGE_NOTICE)
         return bool(elements and elements[0].is_displayed())
 
     def is_product_visible(self, product_name: str) -> bool:
-        """Checks visibility on the CURRENT page only"""
+        """
+        Checks whether a product is visible on the CURRENT page only.
+
+        Pagination is intentionally ignored here to allow
+        precise assertions in pagination-related tests.
+        """
         cards = self.find_elements_no_wait(self.PRODUCT_CARD_BY_NAME(product_name))
         return len(cards) > 0
 
     # Product actions
     def add_product_to_cart(self, product_name: str, quantity: int):
+        """
+        Adds a product with the given quantity to the cart.
+
+        Returns self for fluent test chaining.
+        """
         product_card = self.find_product_card(product_name)
         if product_card is None:
             return None
@@ -72,7 +99,12 @@ class ShopPage(BasePage):
 
     # Product search
     def PRODUCT_CARD_BY_NAME(self, name: str):
-        """Dynamic locator for a specific product card"""
+        """
+        Dynamic locator for a specific product card by name.
+
+        The locator targets the title first and navigates up
+        to the corresponding product card container.
+        """
         return (
             By.XPATH,
             f"//p[contains(@class,'lead') and contains(normalize-space(), '{name}')]"
@@ -80,10 +112,29 @@ class ShopPage(BasePage):
         )
 
     def find_product_card(self, product_name: str, max_pages: int = 10) -> WebElement | None:
+        """
+        Searches for a product card across multiple pages.
+
+        Pagination is handled recursively to keep the logic
+        readable and explicit.
+        """
         self._wait_until_product_list_stable()
         return self._find_product_recursive(product_name, 0, max_pages)
 
-    def _find_product_recursive(self, product_name: str, pages_searched: int, max_pages: int) -> WebElement | None:
+    def _find_product_recursive(
+        self,
+        product_name: str,
+        pages_searched: int,
+        max_pages: int
+    ) -> WebElement | None:
+        """
+        Recursively searches through paginated product lists.
+
+        Stops when:
+        - the product is found
+        - no next page exists
+        - the maximum number of pages is reached
+        """
         if pages_searched >= max_pages:
             return None
 
@@ -95,10 +146,17 @@ class ShopPage(BasePage):
             return None
 
         self.go_to_next_page()
-        return self._find_product_recursive(product_name, pages_searched + 1, max_pages)
+        return self._find_product_recursive(
+            product_name,
+            pages_searched + 1,
+            max_pages
+        )
 
     # Pagination helpers
     def has_next_page(self) -> bool:
+        """
+        Checks whether the 'Next' pagination button is available and enabled.
+        """
         buttons = self.find_elements_no_wait(self.NEXT_PAGE_BUTTON)
         if not buttons:
             return False
@@ -106,6 +164,12 @@ class ShopPage(BasePage):
         return "disabled" not in buttons[0].get_attribute("class")
 
     def go_to_next_page(self):
+        """
+        Navigates to the next pagination page.
+
+        Uses staleness detection to ensure the product list
+        was actually refreshed.
+        """
         old_cards = self.driver.find_elements(*self.PRODUCT_CARD)
 
         self.click(self.NEXT_PAGE_BUTTON)
@@ -121,8 +185,10 @@ class ShopPage(BasePage):
     # Internal helpers
     def _wait_until_product_list_stable(self, timeout: int = 10):
         """
-        Waits until product titles remain unchanged between DOM refreshes.
-        timeout currently controlled by WebDriverWait instance.
+        Waits until the product list becomes stable.
+
+        Stability is defined as unchanged product titles
+        between consecutive DOM checks.
         """
         previous_titles = []
 
@@ -147,7 +213,10 @@ class ShopPage(BasePage):
 
     def wait_until_shop_ready(self):
         """
-        Wait until the shop is usable (after age verification).
+        Waits until the shop page is fully usable.
+
+        This is especially important after age verification
+        or page transitions.
         """
         self.wait.until(
             EC.presence_of_all_elements_located(self.PRODUCT_CARD),
@@ -156,13 +225,18 @@ class ShopPage(BasePage):
         self._wait_until_product_list_stable()
 
     def has_visible_products(self) -> bool:
-        """checks if product cards are visible."""
+        """
+        Checks whether at least one product card is visible.
+        """
         cards = self.find_elements_no_wait(self.PRODUCT_CARD)
         return any(card.is_displayed() for card in cards)
 
     def open_product(self, product_name: str) -> ProductPage:
         """
-        Finds a product card and opens its product detail page.
+        Opens the product detail page for the given product.
+
+        Raises an explicit assertion error if the product
+        cannot be found in the shop.
         """
         product_card = self.find_product_card(product_name)
         if product_card is None:
