@@ -50,11 +50,14 @@ class CheckoutPage(BasePage):
     # Navigation
     def navigate_to_checkout(self):
         """
-        Navigates directly to the checkout page.
-        Waits only for the URL to change, which is more stable than waiting for elements.
+        Navigates to the checkout page via the UI.
+
+        Uses the cart icon instead of direct URL access to better reflect
+        real user behavior and validate navigation flow.
         """
-        self.open(CHECKOUT_URL)
+        self.click(self.CHECKOUT_BUTTON)
         self.wait.until(EC.url_contains("checkout"))
+        return self
 
     def clear_cart_if_not_empty(self):
         """
