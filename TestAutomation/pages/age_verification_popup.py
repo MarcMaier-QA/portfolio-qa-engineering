@@ -13,8 +13,7 @@ class AgeVerificationPopup(BasePage):
     """
 
     # Locators
-    POPUP_CONTAINER = (By.CSS_SELECTOR, "input[placeholder='DD-MM-YYYY']")
-    DATE_INPUT = (By.XPATH, "//input[@placeholder='DD-MM-YYYY']")
+    POPUP_INPUT = (By.CSS_SELECTOR, "input[placeholder='DD-MM-YYYY']")
     CONFIRM_BUTTON = (By.XPATH, "//button[normalize-space()='Confirm']")
     SUCCESS_MESSAGE = (By.XPATH, "//div[contains(text(),'You are of age')]")
     WARNING_MESSAGE = (By.XPATH, "//div[contains(text(),'You are underage')]")
@@ -27,7 +26,7 @@ class AgeVerificationPopup(BasePage):
         Uses a short explicit wait to determine if the popup
         container becomes visible.
         """
-        return self.is_visible(self.POPUP_CONTAINER)
+        return self.is_visible(self.POPUP_INPUT)
 
     def is_date_input_visible(self) -> bool:
         """
@@ -36,7 +35,7 @@ class AgeVerificationPopup(BasePage):
         This is used as an alternative popup detection mechanism
         in case the popup container itself is not reliable.
         """
-        elements = self.find_elements_no_wait(self.DATE_INPUT)
+        elements = self.find_elements_no_wait(self.POPUP_INPUT)
         if not elements:
             return False
         return elements[0].is_displayed()
@@ -98,7 +97,7 @@ class AgeVerificationPopup(BasePage):
             birthdate: Birthdate in format DD-MM-YYYY
                        (e.g. "27-08-2007")
         """
-        self.type(self.DATE_INPUT, birthdate)
+        self.type(self.POPUP_INPUT, birthdate)
 
     def click_confirm(self):
         """
@@ -135,4 +134,4 @@ class AgeVerificationPopup(BasePage):
         self.submit_birthdate(birthdate)
 
         # Wait until the popup disappears or a message is shown
-        self.wait_until_not_visible(self.POPUP_CONTAINER)
+        self.wait_until_not_visible(self.POPUP_INPUT)
