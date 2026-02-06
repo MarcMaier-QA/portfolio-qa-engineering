@@ -1,3 +1,6 @@
+# todo: super()__init__ erklären
+# todo: filter_alcohol(self): besitzt nun wait logik
+# todo: def _wait_until_product_list_stable(self, timeout: int = 10): besitzt nun neue logik
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
@@ -24,6 +27,7 @@ class ShopPage(BasePage):
     UNDERAGE_NOTICE = (By.XPATH, "//h2[normalize-space()='Underage Notice']")
 
     # Pagination
+    CART_ICON = (By.CSS_SELECTOR, ".headerIcon:nth-of-type(3)")
     NEXT_PAGE_BUTTON = (
         By.XPATH,
         "//button[contains(@class,'pagination-link') and normalize-space()='Next']"
@@ -49,14 +53,42 @@ class ShopPage(BasePage):
         return CheckoutPage(self.driver)
 
     # Filters / Visibility
-    def filter_alcohol(self):
+    def filter_alcohol_as_adult(self):
         """
-        Applies the alcohol filter.
+        Applies the alcohol filter for an adult user and waits until the filtered product list is ready.
 
-        Clicking the filter instead of reloading the page
-        ensures we test the real UI behavior.
+        The wait is intentionally placed here because changing the category
+        triggers a dynamic UI update (DOM refresh).
         """
+        # Triggers UI state change
         self.click(self.ALCOHOL_FILTER)
+
+        # Wait until product cards are present after filtering
+        self.wait.until(
+            EC.presence_of_all_elements_located(self.PRODUCT_CARD),
+            message="ShopPage: product cards not present after applying alcohol filter"
+        )
+
+        # Ensure the product list has fully stabilized
+        self._wait_until_product_list_ready()
+
+        return self
+
+    def filter_alcohol_as_underage(self):
+        """
+        Applies the alcohol filter for an adult user and waits until the filtered product list is ready.
+
+        The wait is intentionally placed here because changing the category
+        triggers a dynamic UI update (DOM refresh).
+        """
+        # Triggers UI state change
+        self.click(self.ALCOHOL_FILTER)
+
+        # Wait until product cards are present after filtering
+        self.wait.until(
+            EC.visibility_of_element_located(self.UNDERAGE_NOTICE),
+            message = "ShopPage: underage notice not visible"
+        )
 
     def is_underage_notice_visible(self) -> bool:
         """
@@ -118,7 +150,7 @@ class ShopPage(BasePage):
         Pagination is handled recursively to keep the logic
         readable and explicit.
         """
-        self._wait_until_product_list_stable()
+        self._wait_until_product_list_ready()
         return self._find_product_recursive(product_name, 0, max_pages)
 
     def _find_product_recursive(
@@ -180,35 +212,35 @@ class ShopPage(BasePage):
                 message="ShopPage: product cards did not refresh"
             )
 
-        self._wait_until_product_list_stable()
+        self._wait_until_product_list_ready()
 
     # Internal helpers
-    def _wait_until_product_list_stable(self, timeout: int = 10):
+    def  _wait_until_product_list_ready(self):
         """
-        Waits until the product list becomes stable.
+        Waits until the product list is ready for interaction.
 
-        Stability is defined as unchanged product titles
-        between consecutive DOM checks.
+        A product list is considered ready when:
+        - product cards are present in the DOM
+        - at least one product card is visible
+        - at least one product card is interactable
         """
-        previous_titles = []
 
-        def product_titles_stable(driver):
-            cards = driver.find_elements(*self.PRODUCT_CARD)
-            titles = [
-                card.find_element(*self.PRODUCT_TITLE_IN_CARD).text
-                for card in cards
-            ]
-
-            nonlocal previous_titles
-            if titles and titles == previous_titles:
-                return True
-
-            previous_titles = titles
-            return False
-
+        # Wait until product cards exist
         self.wait.until(
-            product_titles_stable,
-            message="ShopPage: product list not stable"
+            EC.presence_of_all_elements_located(self.PRODUCT_CARD),
+            message="ShopPage: product cards not present"
+        )
+
+        # Wait until at least one product card is visible
+        self.wait.until(
+            EC.visibility_of_any_elements_located(self.PRODUCT_CARD),
+            message="ShopPage: product cards not visible"
+        )
+
+        # Ensure UI is interactable (first card clickable)
+        self.wait.until(
+            EC.element_to_be_clickable(self.PRODUCT_CARD),
+            message="ShopPage: product cards not clickable"
         )
 
     def wait_until_shop_ready(self):
@@ -222,7 +254,7 @@ class ShopPage(BasePage):
             EC.presence_of_all_elements_located(self.PRODUCT_CARD),
             message="ShopPage: product cards not present"
         )
-        self._wait_until_product_list_stable()
+        self._wait_until_product_list_ready()
 
     def has_visible_products(self) -> bool:
         """
