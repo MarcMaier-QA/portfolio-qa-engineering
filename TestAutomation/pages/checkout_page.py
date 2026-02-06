@@ -2,7 +2,6 @@ import re
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from TestAutomation.pages.base_page import BasePage
-from TestAutomation.utils.constants import CHECKOUT_URL
 
 
 class CheckoutPage(BasePage):
