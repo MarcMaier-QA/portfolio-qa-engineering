@@ -1,6 +1,3 @@
-# todo: super()__init__ erklären
-# todo: filter_alcohol(self): besitzt nun wait logik
-# todo: def _wait_until_product_list_stable(self, timeout: int = 10): besitzt nun neue logik
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as EC
