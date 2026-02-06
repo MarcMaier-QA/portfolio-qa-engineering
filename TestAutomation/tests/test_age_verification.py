@@ -28,8 +28,7 @@ def test_age_verification_allows_access_to_alcohol(login):
     )
 
     # Try to access the alcohol category
-    shop.filter_alcohol()
-    shop.wait_until_shop_ready()
+    shop.filter_alcohol_as_adult()
 
     # Adult users should see alcoholic products
     assert shop.has_visible_products(), (
@@ -63,7 +62,7 @@ def test_age_verification_blocks_underage_user(login):
     )
 
     # Attempt to access alcohol category
-    shop.filter_alcohol()
+    shop.filter_alcohol_as_underage()
 
     # Underage notice should be shown
     assert shop.is_underage_notice_visible(), (
