@@ -50,42 +50,25 @@ class ShopPage(BasePage):
         return CheckoutPage(self.driver)
 
     # Filters / Visibility
-    def filter_alcohol_as_adult(self):
+    def filter_alcohol(self):
         """
-        Applies the alcohol filter for an adult user and waits until the filtered product list is ready.
-
-        The wait is intentionally placed here because changing the category
-        triggers a dynamic UI update (DOM refresh).
+        Applies the alcohol filter and waits until either products
+        or the underage notice are visible.
         """
         # Triggers UI state change
         self.click(self.ALCOHOL_FILTER)
 
-        # Wait until product cards are present after filtering
+        # Wait until product cards are present or underage_notice is visible after filtering
         self.wait.until(
-            EC.presence_of_all_elements_located(self.PRODUCT_CARD),
-            message="ShopPage: product cards not present after applying alcohol filter"
+            lambda driver: self.is_underage_notice_visible() or self.has_visible_products(),
+            message="ShopPage: Neither products nor underage notice appeared after filtering alcohol"
         )
 
-        # Ensure the product list has fully stabilized
-        self._wait_until_product_list_ready()
+        # If products are available (Adult Case), we ensure they are stable.
+        if self.has_visible_products():
+            self._wait_until_product_list_ready()
 
         return self
-
-    def filter_alcohol_as_underage(self):
-        """
-        Applies the alcohol filter for an adult user and waits until the filtered product list is ready.
-
-        The wait is intentionally placed here because changing the category
-        triggers a dynamic UI update (DOM refresh).
-        """
-        # Triggers UI state change
-        self.click(self.ALCOHOL_FILTER)
-
-        # Wait until product cards are present after filtering
-        self.wait.until(
-            EC.visibility_of_element_located(self.UNDERAGE_NOTICE),
-            message = "ShopPage: underage notice not visible"
-        )
 
     def is_underage_notice_visible(self) -> bool:
         """
@@ -217,23 +200,8 @@ class ShopPage(BasePage):
         Waits until the product list is ready for interaction.
 
         A product list is considered ready when:
-        - product cards are present in the DOM
-        - at least one product card is visible
         - at least one product card is interactable
         """
-
-        # Wait until product cards exist
-        self.wait.until(
-            EC.presence_of_all_elements_located(self.PRODUCT_CARD),
-            message="ShopPage: product cards not present"
-        )
-
-        # Wait until at least one product card is visible
-        self.wait.until(
-            EC.visibility_of_any_elements_located(self.PRODUCT_CARD),
-            message="ShopPage: product cards not visible"
-        )
-
         # Ensure UI is interactable (first card clickable)
         self.wait.until(
             EC.element_to_be_clickable(self.PRODUCT_CARD),
